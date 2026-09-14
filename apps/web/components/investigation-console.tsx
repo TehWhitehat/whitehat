@@ -85,7 +85,7 @@ export function InvestigationConsole({ id }: { id: string }) {
           if (!last || !["HUMAN REVIEW REQUIRED", "REVIEW QUEUED", "FAILED", "BLOCKED"].includes(last.stage)) throw new Error("The connection ended before local analysis finished. Retry the investigation.");
         } finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
       } catch (cause) {
-        if (!disposed) setError(cause instanceof Error && cause.message !== "Failed to fetch" ? cause.message : "The local connection is unavailable. Check that Whitehat is running and retry.");
+        if (!disposed) setError(cause instanceof Error && cause.message !== "Failed to fetch" ? cause.message : "The investigation connection is unavailable. Reload to check saved progress.");
       } finally { if (!disposed) setRunning(false); }
     }
     void start();
@@ -116,11 +116,11 @@ export function InvestigationConsole({ id }: { id: string }) {
     ["ABI ENTRIES", contract?.abiEntries], ["FUNCTIONS", contract?.functions], ["EVENTS", contract?.events],
   ];
 
-  if (missing) return <main id="main" className="shell investigation-console py-20"><p className="eyebrow mb-6">LOCAL DEVELOPMENT</p><h1 className="hero-title">Local target unavailable.</h1><p className="my-7 max-w-xl leading-7 text-muted">This investigation is not available in this browser tab. It may have been cleared, or the link was opened in a different session. No permanent record exists yet.</p><Link href="/submit" className="button button-primary">CREATE A TARGET <span aria-hidden="true">↗</span></Link></main>;
+  if (missing) return <main id="main" className="shell investigation-console py-20"><p className="eyebrow mb-6">PUBLIC BETA</p><h1 className="hero-title">Investigation unavailable.</h1><p className="my-7 max-w-xl leading-7 text-muted">This investigation could not be found. Check the link or submit a target.</p><Link href="/submit" className="button button-primary">CREATE A TARGET <span aria-hidden="true">↗</span></Link></main>;
 
   return (
     <main id="main" className="shell investigation-console py-12 sm:py-16">
-      <div className="mb-7 flex flex-wrap items-center justify-between gap-4"><p className="eyebrow break-all">INVESTIGATION / {id.toUpperCase()}</p><span className="preview-tag">LOCAL DEVELOPMENT</span></div>
+      <div className="mb-7 flex flex-wrap items-center justify-between gap-4"><p className="eyebrow break-all">INVESTIGATION / {id.toUpperCase()}</p><span className="preview-tag">PUBLIC BETA</span></div>
       <h1 className="console-title">{target?.protocol || (record ? "UNKNOWN PROTOCOL" : "Investigation console.")}</h1>
       <div className="mt-6 grid gap-5 border-b border-line pb-8 text-sm sm:grid-cols-2 xl:grid-cols-[1fr_2fr_1fr_1fr]">
         <div><p className="console-label">CHAIN</p><p className="mt-2">{target?.chain ?? "—"}</p></div>
@@ -130,7 +130,7 @@ export function InvestigationConsole({ id }: { id: string }) {
       </div>
       <section className="my-8 flex flex-wrap items-center justify-between gap-5 border border-line bg-panel p-6" aria-label="Investigation status">
         <div><p className="console-label mb-3">CURRENT STAGE</p><p role="status" className="text-xl font-medium text-mint sm:text-2xl">{status}</p><p className="mt-3 max-w-2xl text-xs leading-5 text-muted">{error || (data.codeFound === false ? "Deeper checks stopped. Verify the chain and address." : fixtureMode ? "Intentionally vulnerable local fixture. Real Slither and Foundry results; no live target is involved." : "Read-only reconnaissance, local static analysis and source-grounded candidate tests. All findings require review.")}</p></div>
-        {!running && record && <button className="button button-secondary" onClick={() => setAttempt((current) => current + 1)}>{fixtureMode ? "RETRY LOCAL ANALYSIS" : "RELOAD SAVED INVESTIGATION"} <span aria-hidden="true">↻</span></button>}
+        {!running && record && <button className="button button-secondary" onClick={() => setAttempt((current) => current + 1)}>{fixtureMode ? "RETRY ANALYSIS" : "RELOAD INVESTIGATION"} <span aria-hidden="true">↻</span></button>}
       </section>
 
       {stored && <p className="mb-3 text-xs text-mint">ELIGIBILITY / {stored.eligibility} — Scope approval controls further analysis.</p>}
@@ -147,7 +147,7 @@ export function InvestigationConsole({ id }: { id: string }) {
               {error && <p role="alert" className="p-5 text-sm leading-6 text-mint">{error}</p>}
             </div>
           </section>
-          <section className="console-panel p-5" aria-labelledby="engine-title"><h2 id="engine-title" className="console-label mb-5">SECURITY ENGINE</h2><dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">{engine.map((name, index) => <div key={name} className="flex flex-wrap justify-between gap-2 border-b border-line pb-3"><dt className="font-mono text-[9px]">{name}</dt><dd><Status value={agentStatus(index + 2)} /></dd></div>)}</dl><p className="mt-5 font-mono text-[9px] leading-5 text-muted">LOCAL EVIDENCE PROCESSING / AI MODEL / {data.aiModel ?? "NOT CONFIGURED"} {data.aiProvider} {data.aiModelName}</p><Link href="/investigations/local-security-fixture" className="mt-4 inline-block text-xs text-mint underline underline-offset-4">Open security test fixture ↗</Link></section>
+          <section className="console-panel p-5" aria-labelledby="engine-title"><h2 id="engine-title" className="console-label mb-5">SECURITY ENGINE</h2><dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">{engine.map((name, index) => <div key={name} className="flex flex-wrap justify-between gap-2 border-b border-line pb-3"><dt className="font-mono text-[9px]">{name}</dt><dd><Status value={agentStatus(index + 2)} /></dd></div>)}</dl><p className="mt-5 font-mono text-[9px] leading-5 text-muted">EVIDENCE PROCESSING / AI MODEL / {data.aiModel ?? "NOT CONFIGURED"} {data.aiProvider} {data.aiModelName}</p></section>
           <section className="console-panel empty-state p-6" aria-labelledby="findings-title"><h2 id="findings-title" className="console-label mb-4">FINDINGS</h2>
             {fixtureMode && <p className="mb-5 text-xs text-mint">WHITEHAT SECURITY TEST FIXTURE — results below are local test evidence only.</p>}
             {stored && !stored.privateAccess && <p className="mb-5 text-xs leading-6 text-muted">{stored.publicSummary.summary}<br />Validated findings: {stored.publicSummary.validatedCount}</p>}
@@ -168,8 +168,8 @@ export function InvestigationConsole({ id }: { id: string }) {
           {network && target && <a href={`${network.explorer}/address/${target.address}`} target="_blank" rel="noreferrer" className="button button-secondary w-full">VIEW PUBLIC EXPLORER <span aria-hidden="true">↗</span></a>}
         </aside>
       </div>
-      {target && <details className="mt-8 border border-line p-5"><summary className="cursor-pointer font-mono text-[10px] tracking-wider">SCOUT INPUT</summary><dl className="mt-5 grid gap-5 text-sm sm:grid-cols-2">{[["PROTOCOL WEBSITE", target.website], ["BOUNTY / SECURITY PROGRAM", target.bounty], ["SCOUT NOTES", target.notes], ["LOCAL DRAFT CREATED", record?.createdAt]].map(([label, value]) => <div key={label}><dt className="console-label text-muted">{label}</dt><dd className="mt-2 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{value || "Not provided"}</dd></div>)}</dl></details>}
-      <p className="mt-8 max-w-4xl text-xs leading-6 text-muted">{fixtureMode ? "Temporary local fixture. Refreshing repeats the analysis." : "Persistent investigation. Refreshing loads saved evidence; it does not restart completed analysis."} Explorer metadata may lag the RPC snapshot. Tool artifacts are kept in isolated local work folders, not a database. Real submitted targets receive local compilation and static analysis; arbitrary target fuzz harnesses are not supported. Only the repository-owned fixture is executed in the offline test EVM. Scout attribution remains subject to eligibility review. Validation applies only to reproduced local fixture defects. All results require human review; nothing is disclosed automatically.</p>
+      {target && <details className="mt-8 border border-line p-5"><summary className="cursor-pointer font-mono text-[10px] tracking-wider">SCOUT INPUT</summary><dl className="mt-5 grid gap-5 text-sm sm:grid-cols-2">{[["PROTOCOL WEBSITE", target.website], ["BOUNTY / SECURITY PROGRAM", target.bounty], ["SCOUT NOTES", target.notes], ["SUBMITTED", record?.createdAt]].map(([label, value]) => <div key={label}><dt className="console-label text-muted">{label}</dt><dd className="mt-2 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{value || "Not provided"}</dd></div>)}</dl></details>}
+      <p className="mt-8 max-w-4xl text-xs leading-6 text-muted">{fixtureMode ? "Temporary local fixture. Refreshing repeats the analysis." : "Persistent investigation. Refreshing loads saved evidence; it does not restart completed analysis."} Explorer metadata may lag the RPC snapshot. Analysis runs in isolated workspaces and saved results require human review. Unsupported checks are marked limited. Scout attribution remains subject to eligibility review; nothing is disclosed automatically.</p>
       <p className="mt-3 text-xs leading-6 text-muted">Whitehat is designed for defensive research, isolated simulation, and responsible disclosure. Submission of a target does not authorize attacks against live systems.</p>
     </main>
   );

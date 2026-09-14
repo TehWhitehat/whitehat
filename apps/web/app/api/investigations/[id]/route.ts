@@ -1,4 +1,4 @@
-import { loadInvestigation, recordFrom, storedEvents } from "../../../../lib/persistent-investigations";
+import { internalFixtureProtocol, loadInvestigation, recordFrom, storedEvents } from "../../../../lib/persistent-investigations";
 import { database, databaseError } from "../../../../lib/database";
 import { adminWallet, rateLimit, requestBucket } from "../../../../lib/scout-auth";
 import { onchainAttribution } from "../../../../lib/onchain-attribution";
@@ -9,6 +9,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     const row = await loadInvestigation((await params).id);
     if (!row) return Response.json({ error: "Investigation not found." }, { status: 404 });
     const privateAccess = !!await adminWallet();
+    if (row.targets.protocol_name === internalFixtureProtocol && !privateAccess) return Response.json({ error: "Investigation not found." }, { status: 404 });
     const attribution = await onchainAttribution(row.targets.chain_id, row.targets.contract_address);
     const db = database();
     const { data: states, error: statesError } = await db.from("investigation_events").select("agent,status").eq("investigation_id", row.id).eq("event_type", "agent").order("sequence", { ascending: false }).limit(250);

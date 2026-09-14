@@ -3,10 +3,11 @@
 import { useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { isChain } from "../lib/investigation";
 import { useScout } from "./wallet-provider";
 
 const emptyTarget = {
-  chain: "Robinhood Chain",
+  chain: "",
   protocol: "",
   address: "",
   website: "",
@@ -48,6 +49,7 @@ export function TargetForm() {
     setStorageError("");
     const target = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, value.trim()])) as TargetDraft;
     const nextErrors: Errors = {};
+    if (!isChain(target.chain)) nextErrors.chain = "Select the target network.";
 
     if (!/^0x[0-9a-fA-F]{40}$/.test(target.address)) {
       nextErrors.address = "Enter a valid EVM contract address.";
@@ -82,9 +84,9 @@ export function TargetForm() {
     <form className="min-w-0 border border-line bg-panel" onSubmit={submit} noValidate aria-labelledby="target-details">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-5 sm:px-8"><h2 id="target-details" className="intake-label">TARGET DETAILS</h2><span className="font-mono text-[9px] tracking-widest text-muted">OFFCHAIN TARGET INTAKE</span></div>
       <div className="space-y-6 p-6 sm:p-8">
-        <p className="text-xs leading-5 text-muted">Contract address is required. All other text fields are optional.</p>
+        <p className="text-xs leading-5 text-muted">Choose the target network and enter its contract address. All other fields are optional.</p>
         <div className="grid gap-6 sm:grid-cols-2">
-          <div><label className="intake-label" htmlFor="target-chain">CHAIN</label><select id="target-chain" name="chain" className="intake-control" value={values.chain} onChange={(event) => update("chain", event.target.value)}><option>Robinhood Chain</option><option>Robinhood Chain Testnet</option></select></div>
+          <div><label className="intake-label" htmlFor="target-chain">CHAIN</label><select id="target-chain" name="chain" className="intake-control" required value={values.chain} onChange={(event) => update("chain", event.target.value)} aria-invalid={Boolean(errors.chain)} aria-describedby={`chain-help${errors.chain ? " chain-error" : ""}`}><option value="" disabled>Select target network</option><option value="Robinhood Chain">Robinhood Chain / 4663</option><option value="Robinhood Chain Testnet">Robinhood Chain Testnet / 46630</option></select><p id="chain-help" className="mt-2 text-xs leading-5 text-muted">The network to investigate, independent of your wallet network.</p>{errors.chain && <p id="chain-error" role="alert" className="intake-error">{errors.chain}</p>}</div>
           <div><label className="intake-label" htmlFor="target-protocol">PROTOCOL NAME</label><input id="target-protocol" name="protocol" className="intake-control" placeholder="e.g. Nova Finance" maxLength={160} value={values.protocol} onChange={(event) => update("protocol", event.target.value)} /></div>
         </div>
         <div>

@@ -6,6 +6,7 @@ import type { InvestigationEvent } from "./investigation";
 export const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 type TargetRow = { eligibility: string; id: string; chain_id: number; contract_address: string; protocol_name: string; protocol_url: string; bounty_url: string; originating_user_id: string; users: { wallet_address: string } };
 export type InvestigationRow = { id: string; target_id: string; status: string; current_stage: string; started_at: string | null; created_at: string; targets: TargetRow; validatedCount?: number };
+export const internalFixtureProtocol = "WHITEHAT OFFLINE SECURITY FIXTURE / TESTNET ANCHOR";
 const selection = "id,target_id,status,current_stage,started_at,created_at,targets!inner(id,eligibility,chain_id,contract_address,protocol_name,protocol_url,bounty_url,originating_user_id,users!inner(wallet_address))";
 export async function loadInvestigation(id: string) {
   if (!uuidPattern.test(id)) return null;
@@ -22,7 +23,7 @@ export async function listInvestigations(wallet?: string) {
     const { data, error: submitError } = await db.from("submissions").select("target_id").eq("user_id", user.id);
     if (submitError) throw submitError; targetIds = data.map(item => item.target_id); if (!targetIds.length) return [];
   }
-  let query = db.from("investigations").select(selection).order("created_at", { ascending: false }).limit(100);
+  let query = db.from("investigations").select(selection).neq("targets.protocol_name", internalFixtureProtocol).order("created_at", { ascending: false }).limit(100);
   if (targetIds) query = query.in("target_id", targetIds);
   const { data, error } = await query; if (error) throw error;
   const rows = data as unknown as InvestigationRow[];
