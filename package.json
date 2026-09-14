@@ -1,0 +1,21 @@
+{
+  "name": "whitehat",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@whitehat/web",
+    "build": "npm run build --workspace=@whitehat/web",
+    "start": "npm run start --workspace=@whitehat/web",
+    "lint": "npm run lint --workspace=@whitehat/web",
+    "typecheck": "npm run typecheck --workspace=@whitehat/web"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.13"
+  }
+}

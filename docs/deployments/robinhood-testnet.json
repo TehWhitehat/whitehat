@@ -1,0 +1,36 @@
+{
+  "network": "Robinhood Chain Testnet",
+  "chainId": 46630,
+  "deployer": "0x7959BF797f6ddb1184341cCE3E9537Df4af63bb7",
+  "verifiedAt": "2026-09-14T08:01:30.405Z",
+  "tokenSupply": "1,000,000,000 WHITEHAT",
+  "permissions": "PASS",
+  "contracts": {
+    "WhitehatToken": {
+      "address": "0xf60df247267f3dbff762e6444dca6fd6829224d3",
+      "transactionHash": "0x377a3cdf327b12543ef011ca04205fb58c2c5b30669a562370a3a8574a4621ae",
+      "blockNumber": 119217201
+    },
+    "TargetRegistry": {
+      "address": "0x24de10e8da3d101d7eb7bcd54fab47e91c1dfb3f",
+      "transactionHash": "0xe1afa03df23676139d88ad7febccac4626770078ff6983bd1c9164ded1336f7c",
+      "blockNumber": 119217222
+    },
+    "BuybackVault": {
+      "address": "0x41d35d2c6a99901ff745d80edfe84c2be104b9d0",
+      "transactionHash": "0x28c3edf66f3c13ae60a0cb68360fe9130d8857df23c8ee7534b9c02d44a4c183",
+      "blockNumber": 119217242
+    },
+    "BuybackExecutor": {
+      "address": "0x2b9707908892f5de2e666f783a35f68c1ed98c71",
+      "transactionHash": "0xc6e6672d707d3362fa80e46aa7ec9b27de3a944ae9e2dc2dd78929804c9e0a8f",
+      "blockNumber": 119217263
+    },
+    "BountyDistributor": {
+      "address": "0x2ca76f01214dfed1c9a9e9b2fe0e1e4c0821cefb",
+      "transactionHash": "0xb9606ec46930cba74e251f37e12024fbd3cb8c1a3ae82399e2c95ac34674fb4f",
+      "blockNumber": 119217287
+    }
+  },
+  "permissionTransaction": "0x2b146f856b18179bcb0be870d80fa8eb9b7cef3bd86b163f359a9985c91e4a13"
+}

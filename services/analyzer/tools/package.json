@@ -1,0 +1,5 @@
+{
+  "name": "whitehat-analysis-tools",
+  "private": true,
+  "dependencies": { "@foundry-rs/forge-win32-amd64": "1.7.1" }
+}

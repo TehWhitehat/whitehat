@@ -1,0 +1,29 @@
+services:
+  worker:
+    build:
+      context: ../..
+      dockerfile: services/runner/Dockerfile
+    network_mode: service:ollama
+    depends_on: [ollama]
+    env_file: .env
+    environment:
+      WHITEHAT_AI_BASE_URL: http://localhost:11434
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+      - /work:size=2g,uid=1000,gid=1000,mode=0700
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 4g
+    cpus: 2
+    pids_limit: 128
+  ollama:
+    image: ollama/ollama:latest
+    volumes: [ollama:/root/.ollama]
+    restart: unless-stopped
+    # Internal network only; never publish the Ollama API to the internet.
+    mem_limit: 8g
+volumes:
+  ollama:
+

@@ -1,0 +1,28 @@
+/* Scoped to target intake so Brand/UI v0.1 homepage styling stays unchanged. */
+.target-intake .intake-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: .12em;
+}
+.target-intake .intake-control {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin-top: 10px;
+  padding: 14px;
+  border: 1px solid var(--color-line);
+  border-radius: 0;
+  background: #080d0a;
+  color: #edf2ee;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.target-intake .intake-control::placeholder { color: var(--color-muted); opacity: 1; }
+.target-intake .intake-control:focus { outline: 2px solid var(--color-mint); outline-offset: 2px; }
+.target-intake .intake-control[aria-invalid="true"] { border-color: var(--color-mint); }
+.target-intake .intake-error { margin-top: 10px; color: var(--color-mint); font-size: 13px; line-height: 1.5; }
+.target-intake button:focus-visible,
+.target-intake h2[tabindex]:focus { outline: 2px solid var(--color-mint); outline-offset: 6px; }

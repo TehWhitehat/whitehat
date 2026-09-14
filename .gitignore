@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.env*
+!.env.example
+*.log
+.DS_Store
+.venv/
+__pycache__/
+services/analyzer/work/
+services/analyzer/tools/solc/
+contracts/cache/
+contracts/broadcast/
+contracts/work/

@@ -1,0 +1,12 @@
+.investigation-console .console-title { font-size: clamp(28px, 3.5vw, 48px); line-height: 1.15; letter-spacing: -.04em; overflow-wrap: anywhere; }
+.investigation-console .console-grid { display: grid; grid-template-columns: 1fr; align-items: start; gap: 24px; }
+.investigation-console .console-panel { min-width: 0; border: 1px solid var(--color-line); background-color: var(--color-panel); }
+.investigation-console .console-label,
+.investigation-console .console-panel-title { font-family: var(--font-mono); font-size: 10px; font-weight: 400; line-height: 1.6; letter-spacing: .1em; }
+.investigation-console .console-panel-title { padding: 20px; border-bottom: 1px solid var(--color-line); }
+.investigation-console .console-status { font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em; }
+.investigation-console .activity-stream { max-height: 540px; min-height: 240px; overflow-y: auto; overflow-wrap: anywhere; }
+.investigation-console button { cursor: pointer; }
+.investigation-console :is(button, summary, [tabindex]):focus-visible { outline: 2px solid var(--color-mint); outline-offset: 4px; }
+@media (min-width: 1024px) { .investigation-console .console-grid { grid-template-columns: 210px minmax(0, 1fr); } .investigation-console .console-grid > aside:last-child { grid-column: 2; } }
+@media (min-width: 1280px) { .investigation-console .console-grid { grid-template-columns: 210px minmax(0, 1fr) 260px; } .investigation-console .console-grid > aside:last-child { grid-column: auto; } }
