@@ -42,7 +42,13 @@ export function WalletControl() {
     if (!address) return;
     setBusy(true); setError("");
     try { const { message } = await auth({ action: "challenge", wallet: address }); const signature = await signMessageAsync({ message }); await auth({ action: "verify", signature }); await scout.refresh(); }
-    catch { setError("Sign-in declined or expired. Retry the offchain message signature."); } finally { setBusy(false); }
+    catch (error) {
+  setError(
+    error instanceof Error
+      ? `Sign-in failed: ${error.message}`
+      : "Sign-in failed. Please retry."
+  );
+} finally { setBusy(false); }
   }
   async function disconnect() { setBusy(true); try { await auth({ action: "logout" }); await disconnectAsync(); await scout.refresh(); } catch { setError("Could not disconnect. Retry."); } finally { setBusy(false); } }
   return <div className="flex max-w-xs flex-wrap items-center gap-3 text-xs">

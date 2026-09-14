@@ -1,7 +1,7 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
-import { verifyMessage, type Hex } from "viem";
+import { recoverMessageAddress, type Hex } from "viem";
 import { database } from "./database";
 import { addressPattern } from "./investigation";
 const hash = (value: string) => createHash("sha256").update(value).digest("hex");
@@ -32,14 +32,90 @@ export async function createChallenge(wallet: string, origin: string) {
   (await cookies()).set("whitehat-challenge",token,{httpOnly:true,sameSite:"strict",path:"/",maxAge:300,secure:origin.startsWith("https:")}); return message;
 }
 export async function verifyChallenge(signature: Hex, origin: string) {
-  if(!permittedOrigin(origin))throw new Error("Invalid origin");
-  const jar=await cookies(),token=jar.get("whitehat-challenge")?.value;jar.delete("whitehat-challenge");
-  if(!token)throw new Error("Missing challenge");
-  const {data,error}=await database().rpc("beta_consume_challenge",{p_hash:hash(token),p_origin:origin});const entry=data?.[0];
-  if(error||!entry||!await verifyMessage({address:entry.wallet as Hex,message:entry.message,signature}))throw new Error("Invalid signature");
-  const old=jar.get("whitehat-session")?.value;if(old)await database().from("beta_auth").delete().eq("token_hash",hash(old));
-  const session=randomBytes(32).toString("hex");const inserted=await database().from("beta_auth").insert({token_hash:hash(session),kind:"session",wallet:entry.wallet,origin,expires:new Date(Date.now()+28800000).toISOString()});if(inserted.error)throw new Error("Session unavailable");
-  jar.set("whitehat-session",session,{httpOnly:true,sameSite:"strict",path:"/",maxAge:28800,secure:origin.startsWith("https:")});return entry.wallet;
+  if (!permittedOrigin(origin)) throw new Error("ORIGIN_MISMATCH");
+
+  const jar = await cookies();
+  const token = jar.get("whitehat-challenge")?.value;
+
+  if (!token) throw new Error("MISSING_CHALLENGE");
+
+  const { data: entry, error } = await database()
+    .from("beta_auth")
+    .select("wallet,message,origin,expires")
+    .eq("token_hash", hash(token))
+    .eq("kind", "challenge")
+    .eq("origin", origin)
+    .gt("expires", new Date().toISOString())
+    .maybeSingle();
+
+  if (error) throw new Error("CHALLENGE_LOOKUP_FAILED");
+
+  if (!entry || !entry.message) {
+    jar.delete("whitehat-challenge");
+    throw new Error("CHALLENGE_EXPIRED");
+  }
+
+  let recovered: string;
+
+  try {
+    recovered = await recoverMessageAddress({
+      message: entry.message,
+      signature,
+    });
+  } catch {
+    throw new Error("INVALID_SIGNATURE");
+  }
+
+  if (recovered.toLowerCase() !== entry.wallet.toLowerCase()) {
+    throw new Error("INVALID_SIGNATURE");
+  }
+
+  // Consume the challenge only AFTER the signature has been verified.
+  const consumed = await database()
+    .from("beta_auth")
+    .delete()
+    .eq("token_hash", hash(token))
+    .eq("kind", "challenge")
+    .select("token_hash");
+
+  if (consumed.error || !consumed.data?.length) {
+    throw new Error("CHALLENGE_CONSUME_FAILED");
+  }
+
+  jar.delete("whitehat-challenge");
+
+  const old = jar.get("whitehat-session")?.value;
+
+  if (old) {
+    await database()
+      .from("beta_auth")
+      .delete()
+      .eq("token_hash", hash(old));
+  }
+
+  const session = randomBytes(32).toString("hex");
+
+  const inserted = await database()
+    .from("beta_auth")
+    .insert({
+      token_hash: hash(session),
+      kind: "session",
+      wallet: entry.wallet,
+      origin,
+      expires: new Date(Date.now() + 28800000).toISOString(),
+    });
+
+  if (inserted.error) throw new Error("SESSION_CREATION_FAILED");
+
+  jar.set("whitehat-session", session, {
+    httpOnly: true,
+    sameSite: "strict",
+    path: "/",
+    maxAge: 28800,
+    secure: origin.startsWith("https:"),
+  });
+
+  return entry.wallet;
 }
 export async function signOut(){const jar=await cookies(),token=jar.get("whitehat-session")?.value;if(token)await database().from("beta_auth").delete().eq("token_hash",hash(token));jar.delete("whitehat-session");}
 
