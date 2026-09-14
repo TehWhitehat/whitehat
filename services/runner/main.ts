@@ -3,6 +3,7 @@ import { runRecon } from "../../apps/web/lib/recon";
 import { runSecurityEngine } from "../../apps/web/lib/security-engine";
 import { chains, type Chain, type InvestigationEvent, type Telemetry } from "../../apps/web/lib/investigation";
 const db=createClient(process.env.SUPABASE_URL!,process.env.SUPABASE_SECRET_KEY!,{auth:{persistSession:false,autoRefreshToken:false}});
+const agentStage: Record<string, InvestigationEvent["stage"]> = { STATIC:"STATIC ANALYSIS", INVARIANT:"INVARIANT GENERATION", FUZZ:"FUZZ TESTING", ECONOMIC:"ECONOMIC ANALYSIS", SIMULATION:"SIMULATION", CRITIC:"CRITIC REVIEW", REPORTER:"REPORTING", SYSTEM:"HUMAN REVIEW REQUIRED" };
 const sleep=(ms:number)=>new Promise(resolve=>setTimeout(resolve,ms));
 async function rpc(name:string,args:Record<string,unknown>={}){const {data,error}=await db.rpc(name,args);if(error)throw new Error("Worker database operation failed");return data;}
 let shuttingDown=false;process.on("SIGTERM",()=>{shuttingDown=true;});
@@ -12,7 +13,7 @@ async function work(job:{id:string;lease:string;investigation_id:string;kind:str
  const heartbeat=setInterval(()=>{void db.from("worker_health").upsert({id:"runner",updated_at:new Date().toISOString()}).then(()=>{});void rpc("beta_heartbeat",{p_job:job.id,p_lease:job.lease}).then(ok=>{if(!ok)controller.abort();}).catch(()=>controller.abort());},10000);
  try{
   const {data:i,error}=await db.from("investigations").select("last_sequence,targets!inner(*)").eq("id",job.investigation_id).single();if(error)throw new Error();
-  const target=i.targets as unknown as {contract_address:string;chain_id:number;eligibility:string;scope_revision:number;allowed_contracts:string[];excluded_contracts:string[];local_analysis_allowed:boolean};
+  const target=i.targets as unknown as {protocol_name:string;contract_address:string;chain_id:number;eligibility:string;scope_revision:number;allowed_contracts:string[];excluded_contracts:string[];local_analysis_allowed:boolean};
   if(target.scope_revision!==job.scope_revision||target.eligibility==="OUT_OF_SCOPE")throw new Error();
   const chain=Object.entries(chains).find(([,v])=>v.id===target.chain_id)?.[0] as Chain|undefined;if(!chain)throw new Error();
   sequence=i.last_sequence;const telemetry:Telemetry={};
@@ -22,7 +23,9 @@ async function work(job:{id:string;lease:string;investigation_id:string;kind:str
    if(!["PUBLIC_RESEARCH","AUTHORIZED_BOUNTY","PROTOCOL_AUTHORIZED"].includes(target.eligibility)||!target.local_analysis_allowed||!target.allowed_contracts.includes(target.contract_address)||target.excluded_contracts.includes(target.contract_address))throw new Error();
    if(!await rpc("beta_heartbeat",{p_job:job.id,p_lease:job.lease}))throw new Error();
    // Analyze only the approved submitted address; discovered proxy addresses are metadata, never added execution targets.
-   await runSecurityEngine({chain,address:target.contract_address,context:{chainId:target.chain_id,codeBytes:telemetry.codeBytes,proxy:telemetry.proxy,implementation:telemetry.implementation,contracts:telemetry.contracts}},event=>emit({...event,sequence:0,investigationId:job.investigation_id,timestamp:new Date().toISOString(),stage:event.agent==="SYSTEM"?"HUMAN REVIEW REQUIRED":"STATIC ANALYSIS"}),controller.signal);
+   // Explicit operator-only launch fixture; never infer this mode from a public submission.
+   const fixture = process.env.WHITEHAT_LOCAL_FIXTURE_INVESTIGATION_ID === job.investigation_id && target.chain_id === 46630 && target.protocol_name === "WHITEHAT OFFLINE SECURITY FIXTURE / TESTNET ANCHOR";
+   await runSecurityEngine(fixture ? { fixture: true } : {chain,address:target.contract_address,context:{chainId:target.chain_id,codeBytes:telemetry.codeBytes,proxy:telemetry.proxy,implementation:telemetry.implementation,contracts:telemetry.contracts}},event=>emit({...event,sequence:0,investigationId:job.investigation_id,timestamp:new Date().toISOString(),stage:agentStage[event.agent] ?? "REVIEW QUEUED"}),controller.signal);
   }
   if(!controller.signal.aborted)emit({sequence:0,investigationId:job.investigation_id,timestamp:new Date().toISOString(),agent:"SYSTEM",eventType:"state",status:"LIMITED",stage:status==="FAILED"?"FAILED":"HUMAN REVIEW REQUIRED",message:job.kind==="RECON"?"Read-only Recon completed. Eligibility review required before local analysis.":"Permitted offline analysis ended. Human review required; no external action.",data:{}});
   await pending;if(controller.signal.aborted||saveFailed)throw new Error();
