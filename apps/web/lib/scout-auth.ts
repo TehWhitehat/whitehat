@@ -11,7 +11,8 @@ export function permittedOrigin(origin: string) {
 export function sameOrigin(request: Request) { const origin = request.headers.get("origin") ?? ""; return permittedOrigin(origin) && new URL(origin).host === request.headers.get("host"); }
 export async function rateLimit(bucket: string, limit: number, seconds: number) {
   const { data, error } = await database().rpc("beta_rate", { p_bucket: hash(bucket), p_limit: limit, p_seconds: seconds });
-  if (error || data !== true) throw new Error("Request limit or database unavailable.");
+  if (error) throw new Error("AUTH_DATABASE_UNAVAILABLE");
+  if (data !== true) throw new Error("RATE_LIMITED");
 }
 export function requestBucket(request: Request) { return process.env.VERCEL ? request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() ?? "unknown" : "local"; }
 export async function scoutWallet() {

@@ -1,13 +1,9 @@
+import { homepageStats } from "../lib/homepage-stats";
 import { HatLogo as Mark } from "../components/hat-logo";
 import { SiteHeader } from "../components/site-header";
 import Link from "next/link";
 
-const stats = [
-  ["$0", "BOUNTIES RECOVERED"],
-  ["0", "PROTOCOLS INVESTIGATED"],
-  ["0", "VALIDATED FINDINGS"],
-  ["$0", "$WHITEHAT BUYBACKS"],
-];
+export const dynamic = "force-dynamic";
 
 const steps = [
   ["Scout submits target", "An interesting protocol. A new perspective. Anyone can surface an opportunity."],
@@ -35,7 +31,9 @@ function NetworkGraphic() {
   </div>;
 }
 
-export default function Home() {
+export default async function Home() {
+  const values = await homepageStats();
+  const stats = ["BOUNTIES RECOVERED", "PROTOCOLS INVESTIGATED", "VALIDATED FINDINGS", "$WHITEHAT BUYBACKS"].map((label,index)=>[values[index],label]);
   return <>
     <a className="skip-link" href="#main">Skip to content</a>
     <SiteHeader />
@@ -49,14 +47,14 @@ export default function Home() {
             <Link className="button button-primary" href="/submit">SUBMIT A TARGET <span aria-hidden="true">↗</span></Link>
             <Link className="button button-secondary" href="/investigations">EXPLORE INVESTIGATIONS <span aria-hidden="true">→</span></Link>
           </div>
-          <p className="mt-6 font-mono text-[11px] tracking-wide text-muted">DESIGNED FOR ROBINHOOD CHAIN <span className="mx-2 text-dim">/</span> IN DEVELOPMENT</p>
+          <p className="mt-6 font-mono text-[11px] tracking-wide text-muted">DESIGNED FOR ROBINHOOD CHAIN <span className="mx-2 text-dim">/</span> PUBLIC BETA</p>
         </div>
         <NetworkGraphic />
       </section>
 
-      <section className="shell border-y border-line" aria-label="Placeholder network statistics">
-        <div className="flex flex-wrap justify-between gap-2 border-b border-line py-4 font-mono text-[10px] tracking-[.12em] text-muted"><span>NETWORK AT A GLANCE</span><span>PRE-LAUNCH · PLACEHOLDER DATA</span></div>
-        <dl className="grid grid-cols-2 lg:grid-cols-4">{stats.map(([value, label]) => <div className="stat" key={label}><dd className="text-4xl font-medium tracking-tight sm:text-5xl">{value}</dd><dt className="mt-4 font-mono text-[10px] tracking-[.1em] text-muted">{label}</dt></div>)}</dl>
+      <section className="shell border-y border-line" aria-label="Live network statistics">
+        <div className="flex flex-wrap justify-between gap-2 border-b border-line py-4 font-mono text-[10px] tracking-[.12em] text-muted"><span>NETWORK AT A GLANCE</span><span>LIVE DATABASE COUNTS · TESTNET PAYMENTS EXCLUDED</span></div>
+        <dl className="grid grid-cols-2 lg:grid-cols-4">{stats.map(([value, label]) => <div className="stat" key={label}><dd className="text-4xl font-medium tracking-tight sm:text-5xl">{value}</dd><dt className="mt-4 font-mono text-[10px] tracking-[.1em] text-muted">{label}</dt></div>)}</dl><p className="py-3 text-xs text-muted">Counts of paid bounty records, completed investigations, human-validated findings and recorded production buybacks. No price or USD valuation is implied.</p>
       </section>
 
       <section id="how-it-works" className="shell section-space" aria-labelledby="network-title">
@@ -70,17 +68,16 @@ export default function Home() {
           <div className="reward"><p className="text-6xl font-medium tracking-tighter">50<span className="text-3xl text-mint">%</span></p><p className="mt-3 font-mono text-xs tracking-wider">TO THE SCOUT</p><p className="mt-2 text-sm text-muted">For surfacing the opportunity.</p></div>
           <div className="reward"><p className="text-6xl font-medium tracking-tighter">50<span className="text-3xl text-mint">%</span></p><p className="mt-3 font-mono text-xs tracking-wider">$WHITEHAT BUYBACK</p><p className="mt-2 text-sm text-muted">Allocated to the planned token buyback.</p></div>
         </div>
-        <p className="mt-4 text-xs leading-5 text-muted">Proposed model. Bounties depend on accepted findings and payment. Protocol research requires scope review. Onchain economics use Robinhood Chain Testnet only.</p>
+        <p className="mt-4 text-xs leading-5 text-muted">Bounties depend on accepted findings and payment. Protocol research requires scope review. Onchain economics use Robinhood Chain Testnet only.</p>
       </section>
 
       <section id="investigations" className="shell pb-20" aria-labelledby="investigations-title">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-5"><div><p className="eyebrow mb-5">02 / RESEARCH ACTIVITY</p><h2 id="investigations-title">Built for accountability.</h2></div><span className="preview-tag">INVESTIGATIONS · COMING LATER</span></div>
-        <div className="empty-state border border-line px-6 py-14 text-center"><div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center border border-line text-mint"><Mark /></div><h3 className="text-xl">The first investigations start here.</h3><p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-muted">Once the research network is ready, you’ll be able to follow a target from submission through review. There are no active investigations yet.</p><a href="#how-it-works" className="mt-6 inline-block text-sm text-mint underline decoration-mint/40 underline-offset-4">Explore the research process <span aria-hidden="true">↗</span></a></div>
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-5"><div><p className="eyebrow mb-5">02 / RESEARCH ACTIVITY</p><h2 id="investigations-title">Built for accountability.</h2></div><span className="preview-tag">LIVE INVESTIGATIONS</span></div>
+        <div className="empty-state border border-line px-6 py-14 text-center"><div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center border border-line text-mint"><Mark /></div><h3 className="text-xl">Follow the research.</h3><p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-muted">Follow saved targets, read-only reconnaissance and scope-approved investigations. Unresolved evidence stays private for human review.</p><Link href="/investigations" className="mt-6 inline-block text-sm text-mint underline decoration-mint/40 underline-offset-4">Explore live investigations <span aria-hidden="true">↗</span></Link></div>
       </section>
 
-      <section id="submit" className="shell pb-20" aria-labelledby="submit-title"><div className="grid gap-8 border border-line bg-panel p-8 md:grid-cols-[1.5fr_1fr] md:items-center md:p-12"><div><p className="eyebrow mb-5">HUMAN CURIOSITY. COLLECTIVE DEFENSE.</p><h2 id="submit-title">The next discovery<br />could start with you.</h2><p className="mt-5 max-w-lg leading-7 text-muted">You won’t need to write code to become a Scout. Just spot a protocol worth investigating.</p></div><div className="border-l-2 border-mint pl-6"><h3 className="text-lg">Target submissions are coming.</h3><p className="mt-3 text-sm leading-6 text-muted">This is Whitehat’s first homepage preview. Target submission will be introduced in a future stage.</p><span className="preview-tag mt-5">NOT YET OPEN</span></div></div></section>
+      <section id="submit" className="shell pb-20" aria-labelledby="submit-title"><div className="grid gap-8 border border-line bg-panel p-8 md:grid-cols-[1.5fr_1fr] md:items-center md:p-12"><div><p className="eyebrow mb-5">HUMAN CURIOSITY. COLLECTIVE DEFENSE.</p><h2 id="submit-title">The next discovery<br />could start with you.</h2><p className="mt-5 max-w-lg leading-7 text-muted">You won’t need to write code to become a Scout. Just spot a protocol worth investigating.</p></div><div className="border-l-2 border-mint pl-6"><h3 className="text-lg">Target submissions are open.</h3><p className="mt-3 text-sm leading-6 text-muted">Connect your wallet, sign in and submit a target. Recon begins through the worker queue; deeper analysis requires scope approval.</p><Link href="/submit" className="preview-tag mt-5 text-mint">SUBMIT A TARGET</Link></div></div></section>
     </main>
-    <footer className="shell flex flex-wrap items-center justify-between gap-6 border-t border-line py-8"><a href="#" className="brand flex items-center gap-3" aria-label="Whitehat home"><Mark /><span>WHITEHAT</span></a><p className="text-xs text-muted">Independent security network concept.</p><p className="font-mono text-[10px] tracking-widest text-muted">PUBLIC BETA / TESTNET ECONOMICS</p></footer>
+    <footer className="shell flex flex-wrap items-center justify-between gap-6 border-t border-line py-8"><a href="#" className="brand flex items-center gap-3" aria-label="Whitehat home"><Mark /><span>WHITEHAT</span></a><p className="text-xs text-muted">Independent security research / Public beta.</p><p className="font-mono text-[10px] tracking-widest text-muted">PUBLIC BETA / TESTNET ECONOMICS</p></footer>
   </>;
 }
-

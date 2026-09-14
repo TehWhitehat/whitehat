@@ -71,6 +71,9 @@ export async function POST(request: Request) {
 
     const allowed = new Set([
       "ORIGIN_MISMATCH",
+      "AUTH_DATABASE_UNAVAILABLE",
+      "RATE_LIMITED",
+      "Auth unavailable",
       "MISSING_CHALLENGE",
       "CHALLENGE_LOOKUP_FAILED",
       "CHALLENGE_EXPIRED",
