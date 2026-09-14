@@ -20,6 +20,13 @@ SOLC = Path(os.environ.get("WHITEHAT_SOLC", ROOT / "tools/solc/solc-0.8.26.exe")
 FORGE = Path(os.environ.get("WHITEHAT_FORGE", ROOT / "tools/node_modules/@foundry-rs/forge-win32-amd64/bin/forge.exe"))
 
 
+def output_tail(path, limit=2000):
+    with path.open("rb") as stream:
+        stream.seek(max(0, path.stat().st_size - limit))
+        tail = stream.read(limit).decode("utf-8", errors="replace")
+    return ("OUTPUT TRUNCATED — FULL RAW OUTPUT NOT INCLUDED IN REPORT\n" if path.stat().st_size > limit else "") + tail
+
+
 def dump(path, value):
     path.write_text(json.dumps(value, ensure_ascii=True), encoding="utf-8")
 
@@ -110,7 +117,15 @@ def run(job):
             finally:
                 if process.poll() is None:
                     process.kill(); process.wait()
+        if out_path.stat().st_size + err_path.stat().st_size > 25_000_000:
+            raise ValueError(f"{name} output exceeded its 25 MB safety limit; raw output excluded from report.")
+        # JSON compiler/test output stays in bounded private workspace files, never in reports.
         execution = {"tool": name, "exitCode": process.returncode, "durationMs": round((time.monotonic() - started) * 1000)}
+        execution["outputBytes"] = out_path.stat().st_size + err_path.stat().st_size
+        if execution["outputBytes"] > 2000:
+            execution["outputNotice"] = "OUTPUT TRUNCATED — FULL RAW OUTPUT NOT INCLUDED IN REPORT"
+        if process.returncode:
+            execution["errorContext"] = output_tail(err_path, 1000)
         executions.append(execution)
         emit("SIMULATION" if name == "forge-simulation" else "FUZZ" if name.startswith("forge-") else "STATIC", "COMPLETE" if process.returncode == 0 else "LIMITED", f"{name} exited with code {process.returncode}.", executions=list(executions))
         return process.returncode, out_path, err_path
@@ -154,7 +169,7 @@ def run(job):
         emit("STATIC", "COMPLETE", "Native Solidity compilation succeeded; AST and bytecode are available.")
         code, _, err = tool("slither", [sys.executable, Path(__file__), "--slither", job])
         if code:
-            raise ValueError("Slither could not analyze this compilation: " + err.read_text(encoding="utf-8", errors="replace")[-500:])
+            raise ValueError("Slither could not analyze this compilation: " + output_tail(err, 500))
         analysis = json.loads((job / "slither.json").read_text())
         for index, item in enumerate(analysis["detectors"]):
             elements = item.get("elements", [])
@@ -201,7 +216,7 @@ def run(job):
             (tests / "WhitehatSecurityFixture.t.sol").write_text(test_source)
         code, _, err = tool("forge-build", [FORGE, "build", "--offline", "--force"])
         if code:
-            raise ValueError("Foundry build failed: " + err.read_text(errors="replace")[-650:])
+            raise ValueError("Foundry build failed: " + output_tail(err, 650))
         emit("FUZZ", "COMPLETE", "forge build succeeded in the isolated local workspace.", executions=list(executions))
         if not fixture:
             emit("FUZZ", "LIMITED", "Source compiles in Foundry. Automatic safe deployment and fuzz harness generation for this real target are not supported yet; no tests executed.", "agent", executions=list(executions))
@@ -211,7 +226,7 @@ def run(job):
             result = json.loads(out.read_text())
             tests = [dict(value, name=name) for suite in result.values() if isinstance(suite, dict) for name, value in suite.get("test_results", {}).items()]
             if not tests:
-                raise ValueError("Foundry returned no test results: " + err.read_text(errors="replace")[-500:])
+                raise ValueError("Foundry returned no test results: " + output_tail(err, 500))
             summary = {"tests": len(tests), "passed": sum(item["status"] == "Success" for item in tests), "failed": sum(item["status"] == "Failure" for item in tests), "fuzzRuns": 0, "invariantRuns": 0, "invariantCalls": 0, "invariantHandlerCalls": 0}
             for item in tests:
                 kind = item.get("kind", {})

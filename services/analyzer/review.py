@@ -1,5 +1,6 @@
 """Deterministic evidence review; no model, network, or disclosure side effects."""
 import json
+from collections import Counter
 from datetime import datetime, timezone
 from typing import Protocol
 from ai_provider import AIReview, evidence_pack
@@ -51,6 +52,43 @@ def review_candidates(findings, candidates, hypotheses, simulations):
     return reviews
 
 
+REPORT_LIMIT = 128_000
+TRUNCATION_NOTICE = 'OUTPUT TRUNCATED — FULL RAW OUTPUT NOT INCLUDED IN REPORT'
+
+
+def compact_report(metadata, findings, executions, simulations, reviews, ai_data):
+    # All detailed findings are already persisted privately by their stable source IDs.
+    rank = {'High': 0, 'Medium': 1, 'Low': 2, 'Unclassified': 3, 'Informational': 4, 'Optimization': 5}
+    selected = sorted(findings, key=lambda f: (f['status'] != 'VALIDATED', rank.get(f['severity'], 3)))[:40]
+    sims = {s['candidateId']: s for s in simulations}
+    critic = {r['candidateId']: r for r in reviews}
+    rows = []
+    for f in selected:
+        rows.append({**{key: f[key] for key in ('id', 'title', 'severity', 'confidence', 'status', 'fixture')},
+                     'component': f['component'][:250], 'evidence': f['description'][:600],
+                     'evidenceRef': {'store': 'private findings', 'sourceId': f['id']},
+                     'reproduction': sims.get(f['id'], {}).get('status', 'NOT EXECUTED'),
+                     'testResult': sims.get(f['id'], {}).get('observed', 'No supported local harness')[:300],
+                     'critic': {k: str(v)[:350] for k, v in critic.get(f['id'], {}).items()},
+                     'remediation': 'Review caller authorization and intended role boundaries.' if f['title'] == 'tx-origin' else 'Remove the extra credited unit and rerun accounting tests.' if f['fixture'] and f['tool'] == 'Foundry' else 'Review the referenced detector location and intended behavior before changing code.'})
+    report = {'metadata': {**metadata, 'aiModel': ai_data['aiModel']},
+              'executiveSummary': f"{len(findings)} tool signals reviewed. {sum(f['status'] == 'VALIDATED' for f in findings)} reproduced fixture defects; no live exploitability or monetary loss established. HUMAN REVIEW REQUIRED.",
+              'methodology': 'Native compilation, Slither, supported offline tests and evidence-grounded AI review. Model suggestions cannot validate findings.',
+              'findingCounts': dict(Counter(f['status'] for f in findings)),
+              'findings': rows, 'totalFindings': len(findings),
+              'evidenceReference': 'Full findings and simulation/critic evidence are stored in private findings and investigation events for this investigation, keyed by sourceId/candidateId.',
+              'executions': executions, 'aiAnalysis': ai_data,
+              'limitations': ['Unsupported fuzz/simulation harnesses remain LIMITED; no third-party target was executed.', TRUNCATION_NOTICE],
+              'status': 'HUMAN REVIEW REQUIRED', 'disclosure': 'NOT DISCLOSED'}
+    while len(json.dumps(report, ensure_ascii=True).encode()) > REPORT_LIMIT - 2000 and rows:
+        rows.pop()
+    report['summarizedFindings'] = len(rows)
+    report['omittedFromSummary'] = len(findings) - len(rows)
+    if len(json.dumps(report, ensure_ascii=True).encode()) > REPORT_LIMIT - 1000:
+        raise ValueError('Concise report exceeded its 128 KB safety limit.')
+    return report
+
+
 def run_review(job, request, findings, candidates, executions, emit, tool, forge):
     provider: ReasoningProvider = DeterministicProvider()
     fixture = request.get('mode') == 'fixture'
@@ -65,7 +103,7 @@ def run_review(job, request, findings, candidates, executions, emit, tool, forge
     emit('SIMULATION', 'RUNNING', 'Checking available local reproduction harnesses.', 'agent')
     for finding in findings:
         finding['status'] = 'TESTING'
-    emit('SIMULATION', 'RUNNING', 'Candidates entered local reproduction assessment.', findings=list(findings))
+    emit('SIMULATION', 'RUNNING', 'Candidates entered local reproduction assessment.')
     tests, failure = {}, ''
     if fixture and any(e['tool'] == 'forge-build' and e['exitCode'] == 0 for e in executions):
         try:
@@ -86,7 +124,7 @@ def run_review(job, request, findings, candidates, executions, emit, tool, forge
     emit('CRITIC', 'RUNNING', 'Challenging reachability, authorization, impact, local assumptions and duplicate evidence.', 'agent')
     for finding in findings:
         finding['status'] = 'CRITIC REVIEW'
-    emit('CRITIC', 'RUNNING', 'Candidates entered critic review.', findings=list(findings))
+    emit('CRITIC', 'RUNNING', 'Candidates entered critic review.')
     reviews = provider.critique(findings, candidates, hypotheses, simulations)
     for finding in findings:
         review = next(r for r in reviews if r['candidateId'] == finding['id'])
@@ -104,9 +142,7 @@ def run_review(job, request, findings, candidates, executions, emit, tool, forge
     ai.run('REPORTER', 'Produce an evidence-grounded private report with remediation and human review state', review_pack)
     emit('REPORTER', 'RUNNING', 'Assembling private evidence report and redacted public summary locally.', 'agent')
     metadata = {'createdAt': datetime.now(timezone.utc).isoformat(), 'target': request.get('metadata', {'kind': 'WHITEHAT SECURITY TEST FIXTURE' if fixture else 'Verified source'}), 'fixture': fixture, 'aiModel': 'NOT CONFIGURED'}
-    private = {'metadata': metadata, 'methodology': 'Deterministic evidence rules; native compilation, Slither, bounded offline fixture testing and independent test rerun where available. Separate local model suggestions, when available, cannot change deterministic evidence.', 'executions': executions, 'findings': findings, 'candidateInvariants': candidates, 'hypotheses': hypotheses, 'simulations': simulations, 'critic': reviews, 'remediation': [{'findingId': f['id'], 'guidance': 'Use explicit caller authorization and review intended role boundaries.' if f['title'] == 'tx-origin' else 'Remove the extra credited unit and rerun accounting tests.' if f['fixture'] and f['tool'] == 'Foundry' else 'Review the detector location and intended behavior before changing code.'} for f in findings], 'limitations': ['Local fixture evidence does not establish third-party exploitability or monetary loss.', 'Unexecuted candidates remain pending; deterministic review is not an independent expert audit.'], 'disclosure': 'NOT DISCLOSED', 'status': 'HUMAN REVIEW REQUIRED'}
-    private['aiAnalysis'] = ai.data()
-    private['metadata']['aiModel'] = ai.state
+    private = compact_report(metadata, findings, executions, simulations, reviews, ai.data())
     # Explicit allowlist: no raw titles, source locations, test names or reproduction details.
     public = {'metadata': metadata, 'toolsExecuted': sorted({e['tool'] for e in executions}), 'stages': {a: 'COMPLETE' if supported else 'LIMITED' for a, supported in [('ECONOMIC', bool(hypotheses)), ('SIMULATION', bool(tests) and not failure), ('CRITIC', bool(reviews)), ('REPORTER', True)]}, 'riskSummary': 'Automated signals require human review; no real-world loss or live exploitability established.', 'findingStatuses': [{'id': f['id'], 'status': f['status']} for f in findings], 'validatedCount': sum(f['status'] == 'VALIDATED' for f in findings), 'disclosure': 'NOT DISCLOSED', 'status': 'HUMAN REVIEW REQUIRED'}
     recorded = [json.loads(line) for line in (job / 'events.ndjson').read_text().splitlines()]
@@ -114,7 +150,7 @@ def run_review(job, request, findings, candidates, executions, emit, tool, forge
     public['stages'] = {**statuses, 'REPORTER': 'COMPLETE'}
     private['stages'] = public['stages']
     for filename, value in [('private-report.json', private), ('public-summary.json', public)]:
-        (job / filename).write_text(json.dumps(value, indent=2), encoding='utf-8')
+        (job / filename).write_text(json.dumps(value, separators=(',', ':')), encoding='utf-8')
     result = {'hypotheses': hypotheses, 'simulations': simulations, 'reviews': reviews, 'reports': {'private': private, 'public': public}, **ai.data()}
-    emit('REPORTER', 'COMPLETE', 'Private report and redacted public summary assembled. HUMAN REVIEW REQUIRED; nothing published or disclosed.', 'agent', **result)
+    emit('REPORTER', 'COMPLETE', 'Private report and redacted public summary assembled. HUMAN REVIEW REQUIRED; nothing published or disclosed.', 'agent', reports=result['reports'])
     return result
