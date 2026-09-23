@@ -7,7 +7,7 @@ import "./submit.css";
 
 export const metadata: Metadata = {
   title: "Submit a Target — WHITEHAT",
-  description: "Prepare a local target draft for the Whitehat Scout network.",
+  description: "Submit a target to the Whitehat Scout network for read-only reconnaissance and scope-approved security research.",
 };
 
 const pipeline = ["SUBMIT", "VERIFY", "INVESTIGATE", "VALIDATE", "DISCLOSE", "BOUNTY"];
@@ -40,7 +40,7 @@ export default function SubmitPage() {
               </div>
             </section>
             <section className="empty-state border border-line p-6 sm:p-8" aria-labelledby="pipeline-title">
-              <div className="mb-7 flex flex-wrap items-center justify-between gap-3"><h2 id="pipeline-title" className="intake-label">INVESTIGATION PIPELINE</h2><span className="font-mono text-[9px] tracking-widest text-muted">PREVIEW ONLY</span></div>
+              <div className="mb-7 flex flex-wrap items-center justify-between gap-3"><h2 id="pipeline-title" className="intake-label">INVESTIGATION PIPELINE</h2><span className="font-mono text-[9px] tracking-widest text-muted">PUBLIC BETA</span></div>
               <ol className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
                 {pipeline.map((step, index) => <li key={step}><span className="mb-2 block font-mono text-[10px] text-mint">0{index + 1}</span><span className="flex items-center justify-between gap-2 font-mono text-[10px] tracking-wide">{step}{index < pipeline.length - 1 && <span aria-hidden="true" className="text-muted">→</span>}</span></li>)}
               </ol>
@@ -53,7 +53,7 @@ export default function SubmitPage() {
           <p className="max-w-3xl text-sm leading-6 text-muted">Whitehat is designed for defensive research, isolated simulation, and responsible disclosure. Submission of a target does not authorize attacks against live systems.</p>
         </section>
       </main>
-      <footer className="shell flex flex-wrap items-center justify-between gap-6 border-t border-line py-8"><Link href="/" className="brand flex items-center gap-3" aria-label="Whitehat home"><HatLogo /><span>WHITEHAT</span></Link><p className="text-xs text-muted">Independent security network concept.</p><p className="font-mono text-[10px] tracking-widest text-muted">STAGE 1B / LOCAL PREVIEW</p></footer>
+      <footer className="shell flex flex-wrap items-center justify-between gap-6 border-t border-line py-8"><Link href="/" className="brand flex items-center gap-3" aria-label="Whitehat home"><HatLogo /><span>WHITEHAT</span></Link><p className="text-xs text-muted">Independent security research / Public beta.</p><p className="font-mono text-[10px] tracking-widest text-muted">PUBLIC BETA</p></footer>
     </>
   );
 }
