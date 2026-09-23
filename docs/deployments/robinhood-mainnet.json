@@ -1,0 +1,68 @@
+{
+  "network": "Robinhood Chain Mainnet",
+  "chainId": 4663,
+  "deployer": "0x7959BF797f6ddb1184341cCE3E9537Df4af63bb7",
+  "initialAdmin": "0x7959BF797f6ddb1184341cCE3E9537Df4af63bb7",
+  "verifiedAt": "2026-09-23T15:01:05.106Z",
+  "verifiedAtBlock": 70604126,
+  "permissions": "PASS",
+  "tokenStatus": "UNINITIALISED",
+  "whitehatToken": "0x0000000000000000000000000000000000000000",
+  "buybackRoute": "Pending activation",
+  "productionTokenCA": "Pending Pons launch",
+  "contracts": {
+    "TargetRegistry": {
+      "address": "0xf60df247267f3dbff762e6444dca6fd6829224d3",
+      "transactionHash": "0xd8b92061856ac9ca7da32216fd95becc1670e8913e36c4ecae3094669899e88f",
+      "blockNumber": 70602667,
+      "admin": null,
+      "constructorArgs": [],
+      "constructorArgsEncoded": "0x",
+      "bytecodeVerified": true,
+      "sourceVerified": false
+    },
+    "BuybackVault": {
+      "address": "0x24de10e8da3d101d7eb7bcd54fab47e91c1dfb3f",
+      "transactionHash": "0xc32714bc1b08020f284155106fba9b809c31706288d98280b3e2de848fad15aa",
+      "blockNumber": 70602691,
+      "admin": "0x7959BF797f6ddb1184341cCE3E9537Df4af63bb7",
+      "constructorArgs": [
+        "0x7959BF797f6ddb1184341cCE3E9537Df4af63bb7"
+      ],
+      "constructorArgsEncoded": "0x0000000000000000000000007959bf797f6ddb1184341cce3e9537df4af63bb7",
+      "bytecodeVerified": true,
+      "sourceVerified": false
+    },
+    "BuybackExecutor": {
+      "address": "0x41d35d2c6a99901ff745d80edfe84c2be104b9d0",
+      "transactionHash": "0x66e539d6031a7c1ffa4c0c2fa2ca32ccc8b53049c51abe17f96fda7da3ccb77d",
+      "blockNumber": 70602715,
+      "admin": "0x7959BF797f6ddb1184341cCE3E9537Df4af63bb7",
+      "constructorArgs": [
+        "0x7959BF797f6ddb1184341cCE3E9537Df4af63bb7",
+        "0x24de10e8da3d101d7eb7bcd54fab47e91c1dfb3f"
+      ],
+      "constructorArgsEncoded": "0x0000000000000000000000007959bf797f6ddb1184341cce3e9537df4af63bb700000000000000000000000024de10e8da3d101d7eb7bcd54fab47e91c1dfb3f",
+      "bytecodeVerified": true,
+      "sourceVerified": false
+    },
+    "BountyDistributor": {
+      "address": "0x2b9707908892f5de2e666f783a35f68c1ed98c71",
+      "transactionHash": "0x86976f2f7c6890cacd7c706e04200914cf9e3e4c308515c897140d4204c39ba1",
+      "blockNumber": 70602739,
+      "admin": "0x7959BF797f6ddb1184341cCE3E9537Df4af63bb7",
+      "constructorArgs": [
+        "0x7959BF797f6ddb1184341cCE3E9537Df4af63bb7",
+        "0xf60df247267f3dbff762e6444dca6fd6829224d3",
+        "0x24de10e8da3d101d7eb7bcd54fab47e91c1dfb3f"
+      ],
+      "constructorArgsEncoded": "0x0000000000000000000000007959bf797f6ddb1184341cce3e9537df4af63bb7000000000000000000000000f60df247267f3dbff762e6444dca6fd6829224d300000000000000000000000024de10e8da3d101d7eb7bcd54fab47e91c1dfb3f",
+      "bytecodeVerified": true,
+      "sourceVerified": false
+    }
+  },
+  "executorPermissionTransaction": "0x0b80557dffea0e1b5597a31d695e7f39c8e4dc339074f6be34a1d21304007cdb",
+  "totalGasUsed": "4579226",
+  "executionCostWei": "233170843610000",
+  "verification": "Live receipts, creation input, compiled runtime (immutable locations checked through getters), admin, roles, references and eth_call guards checked. No RouterAllowed events since deployment."
+}

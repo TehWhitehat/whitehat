@@ -71,7 +71,8 @@ contract FoundationTest {
     bytes32 id;
     function setUp() public {
         token=new WhitehatToken(address(this)); registry=new TargetRegistry();
-        vault=new BuybackVault(address(this),IERC20(address(token)));
+        vault=new BuybackVault(address(this));
+        vault.setWhitehatToken(address(token));
         executor=new BuybackExecutor(address(this),vault);
         distributor=new BountyDistributor(address(this),registry,vault);
         vault.grantRole(vault.EXECUTOR_ROLE(),address(executor));

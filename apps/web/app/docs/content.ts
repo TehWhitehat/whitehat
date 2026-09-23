@@ -412,7 +412,7 @@ export const docPages: DocPage[] = [
         "text": [
           "The database records the originating Scout for a target identified by chain and contract address. Duplicate submissions preserve that original attribution rather than overwriting it. A later submission can appear in a Scout's history without changing the originator.",
           "Attribution identifies the potential recipient if an eligible investigation produces a successful bounty. It is not proof of eligibility, an unconditional payment claim or a guarantee that a finding will be accepted. Final qualification requires Whitehat review and the protocol's security-program rules.",
-          "The optional onchain registry flow is separate and currently TESTNET only. It does not turn database attribution into a mainnet reward contract."
+          "Optional onchain registration is available through the Robinhood Chain mainnet registry (4663), with separate testnet support (46630). The registry records the first successful registration transaction, which can differ from database submission order. Conflicts and reward eligibility require human review."
         ]
       },
       {
@@ -457,7 +457,7 @@ export const docPages: DocPage[] = [
     "group": "Protocol",
     "sections": [
       {
-        "title": "Production CA: Pending launch",
+        "title": "$WHITEHAT Production CA — Pending Pons launch",
         "text": [
           "The production Pons contract address has not been supplied. No production token address is published here. Do not use a testnet address as the production token address. A verified production entry and Pons link will be added after launch details are provided."
         ]
@@ -497,7 +497,7 @@ export const docPages: DocPage[] = [
       {
         "title": "Mainnet / production",
         "text": [
-          "Deployment pending. Production CA: Pending launch. No production Pons address has been supplied. The testnet contracts below are not production token, reward or buyback contracts."
+          "TargetRegistry, BuybackVault, BuybackExecutor and BountyDistributor are deployed on Robinhood Chain mainnet / 4663. Deployment receipts, compiled code, administrator, references and executor permission have been checked onchain. The Vault token remains UNINITIALISED and can be bound only once by the administrator. No production router is enabled. $WHITEHAT Production CA — Pending Pons launch. Buyback route — Pending activation."
         ]
       },
       {
@@ -587,7 +587,7 @@ export const docPages: DocPage[] = [
           [
             "Robinhood Chain mainnet",
             "4663",
-            "Read-only reconnaissance; no production WHITEHAT contract deployment recorded"
+            "Read-only reconnaissance and deployed core WHITEHAT infrastructure; token and buyback route pending"
           ],
           [
             "Robinhood Chain Testnet",
@@ -596,7 +596,7 @@ export const docPages: DocPage[] = [
           ]
         ],
         "text": [
-          "These IDs and explorer links come from the current repository configuration. Mainnet research support does not mean the WHITEHAT token or reward contracts are deployed on mainnet."
+          "These IDs and explorer links come from the current repository configuration. Core infrastructure is deployed on mainnet; the production WHITEHAT token and buyback route remain pending."
         ]
       },
       {
@@ -788,7 +788,7 @@ export const docPages: DocPage[] = [
           ],
           [
             "Economics",
-            "Production contracts pending; existing contracts and mock flows are TESTNET"
+            "Core contracts deployed on mainnet; production token and buyback route pending. Mock flows remain TESTNET."
           ]
         ],
         "text": [
@@ -871,7 +871,7 @@ export const docPages: DocPage[] = [
       {
         "title": "How do Scout rewards work?",
         "text": [
-          "The intended model splits eligible bounty amounts actually received: 50% to the originating Scout and 50% to WHITEHAT buybacks. Production economics are not yet deployed; existing mock flows are TESTNET."
+          "The intended model splits eligible bounty amounts actually received: 50% to the originating Scout and 50% to WHITEHAT buybacks. Core distribution infrastructure is deployed on mainnet; production token binding and buyback routing remain pending. Existing mock flows are TESTNET."
         ]
       },
       {
@@ -889,7 +889,7 @@ export const docPages: DocPage[] = [
       {
         "title": "Where is the official contract address?",
         "text": [
-          "Production CA: Pending launch. Use the Contracts page for explicitly labelled testnet records. Do not treat a testnet address as the production Pons token."
+          "$WHITEHAT Production CA — Pending Pons launch. Use the Contracts page for verified mainnet infrastructure and separately labelled testnet records. Do not treat a testnet address as the production Pons token."
         ]
       },
       {

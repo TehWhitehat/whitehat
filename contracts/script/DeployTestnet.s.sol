@@ -25,7 +25,8 @@ contract DeployTestnet {
         vm.startBroadcast(key);
         token=new WhitehatToken(recipient);
         registry=new TargetRegistry();
-        vault=new BuybackVault(admin,IERC20(address(token)));
+        vault=new BuybackVault(admin);
+        vault.setWhitehatToken(address(token));
         executor=new BuybackExecutor(admin,vault);
         distributor=new BountyDistributor(admin,registry,vault);
         vault.grantRole(vault.EXECUTOR_ROLE(),address(executor));

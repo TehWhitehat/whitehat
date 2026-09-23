@@ -2,12 +2,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { WagmiProvider, createConfig, http, useConnection, useConnect, useDisconnect, useSignMessage } from "wagmi";
 import { injected } from "wagmi/connectors";
+import { mainnet } from "../lib/attribution-network";
 import { testnet } from "../lib/testnet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Link from "next/link";
 
-const chain = testnet;
-const config = createConfig({ chains: [chain], connectors: [injected()], transports: { [chain.id]: http() }, ssr: true });
+
+const config = createConfig({ chains: [mainnet, testnet], connectors: [injected()], transports: { [mainnet.id]: http(), [testnet.id]: http() }, ssr: true });
 const ScoutContext = createContext<{ wallet: string | null; refresh: () => Promise<void> }>({ wallet: null, refresh: async () => {} });
 export const useScout = () => useContext(ScoutContext);
 async function auth(body: object) {

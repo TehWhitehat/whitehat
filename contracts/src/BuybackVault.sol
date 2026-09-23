@@ -10,15 +10,22 @@ import {IBuybackRouter} from "./IBuybackRouter.sol";
 contract BuybackVault is WhitehatRoles, ReentrancyGuard {
     using SafeERC20 for IERC20;
     bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
-    IERC20 public immutable whitehat;
+    IERC20 public whitehat;
+    error TokenAlreadyInitialised();
+    error TokenNotInitialised();
     error InvalidSwap();
     error UnsupportedAsset();
     error InsufficientOutput();
     event Deposited(address indexed asset, address indexed from, uint256 amount);
+    event WhitehatTokenInitialised(address indexed token, address indexed admin);
     event Purchased(address indexed router, address indexed asset, uint256 amountIn, uint256 amountOut);
-    constructor(address admin, IERC20 token) WhitehatRoles(admin) {
-        if (address(token).code.length == 0) revert UnsupportedAsset();
-        whitehat = token;
+    constructor(address admin) WhitehatRoles(admin) {}
+    /// One-time binding. No reset, replacement, or upgrade path exists.
+    function setWhitehatToken(address token) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (address(whitehat) != address(0)) revert TokenAlreadyInitialised();
+        if (token == address(0) || token.code.length == 0) revert UnsupportedAsset();
+        whitehat = IERC20(token);
+        emit WhitehatTokenInitialised(token, msg.sender);
     }
     function balance(address asset) external view returns (uint256) { return IERC20(asset).balanceOf(address(this)); }
     function deposit(IERC20 asset, uint256 amount) external whenNotPaused nonReentrant {
@@ -31,6 +38,7 @@ contract BuybackVault is WhitehatRoles, ReentrancyGuard {
     function executeSwap(address router, IERC20 asset, uint256 amount, uint256 minOut, uint256 deadline)
         external onlyRole(EXECUTOR_ROLE) whenNotPaused nonReentrant returns (uint256 output)
     {
+        if (address(whitehat) == address(0)) revert TokenNotInitialised();
         if (router.code.length == 0 || address(asset) == address(whitehat) || amount == 0 || minOut == 0 || block.timestamp > deadline) revert InvalidSwap();
         uint256 beforeInput = asset.balanceOf(address(this));
         uint256 beforeOutput = whitehat.balanceOf(address(this));
