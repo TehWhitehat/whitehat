@@ -6,10 +6,10 @@
   "verifiedAt": "2026-09-23T15:01:05.106Z",
   "verifiedAtBlock": 70604126,
   "permissions": "PASS",
-  "tokenStatus": "UNINITIALISED",
-  "whitehatToken": "0x0000000000000000000000000000000000000000",
+  "tokenStatus": "BOUND",
+  "whitehatToken": "0xb9e9d4c42e34c7a494dd35cfa640b94882d57c45",
   "buybackRoute": "Pending activation",
-  "productionTokenCA": "Pending Pons launch",
+  "productionTokenCA": "0xb9e9d4c42e34c7a494dd35cfa640b94882d57c45",
   "contracts": {
     "TargetRegistry": {
       "address": "0xf60df247267f3dbff762e6444dca6fd6829224d3",
@@ -64,5 +64,24 @@
   "executorPermissionTransaction": "0x0b80557dffea0e1b5597a31d695e7f39c8e4dc339074f6be34a1d21304007cdb",
   "totalGasUsed": "4579226",
   "executionCostWei": "233170843610000",
-  "verification": "Live receipts, creation input, compiled runtime (immutable locations checked through getters), admin, roles, references and eth_call guards checked. No RouterAllowed events since deployment."
+  "verification": "Live receipts, creation input, compiled runtime (immutable locations checked through getters), admin, roles, references and eth_call guards checked. No RouterAllowed events since deployment.",
+  "productionToken": {
+    "address": "0xb9e9d4c42e34c7a494dd35cfa640b94882d57c45",
+    "name": "Whitehat",
+    "symbol": "WHITEHAT",
+    "decimals": 18,
+    "totalSupply": "1000000000",
+    "totalSupplyRaw": "1000000000000000000000000000",
+    "bytecodeBytes": 3248,
+    "bytecodeHash": "0xbcf6ed7ce71ef254eab0ebecc215b33a860aa5c586c850791c89286b2213256c",
+    "verifiedAtBlock": "70711400",
+    "ponsUrl": "https://www.ponsfamily.com/launchpad/0xb9e9d4c42e34c7a494dd35cfa640b94882d57c45",
+    "explorerUrl": "https://robinhoodchain.blockscout.com/token/0xb9e9d4c42e34c7a494dd35cfa640b94882d57c45"
+  },
+  "tokenBinding": {
+    "transactionHash": "0x1abe676fc5307a3ddb20d27e22232ac3cdcbef2767874f0e1ff8c11449ddc19d",
+    "blockNumber": "70717257",
+    "verifiedAt": "2026-09-23T18:10:40.715Z",
+    "replacementGuard": "TokenAlreadyInitialised"
+  }
 }

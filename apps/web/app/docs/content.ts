@@ -453,13 +453,13 @@ export const docPages: DocPage[] = [
   {
     "slug": "token",
     "title": "$WHITEHAT",
-    "description": "The intended security-activity buyback model, with production contract address pending launch.",
+    "description": "The official WHITEHAT token on Robinhood Chain and its security-activity buyback model.",
     "group": "Protocol",
     "sections": [
       {
-        "title": "$WHITEHAT Production CA — Pending Pons launch",
+        "title": "$WHITEHAT Production CA",
         "text": [
-          "The production Pons contract address has not been supplied. No production token address is published here. Do not use a testnet address as the production token address. A verified production entry and Pons link will be added after launch details are provided."
+          "Whitehat (WHITEHAT) is live on Pons on Robinhood Chain Mainnet / 4663. The verified production token has 18 decimals and a total supply of 1,000,000,000 WHITEHAT. Always match the full contract address before trading."
         ]
       },
       {
@@ -472,12 +472,12 @@ export const docPages: DocPage[] = [
       {
         "title": "What is implemented today",
         "text": [
-          "The repository contains a fixed-supply testnet token and testnet registry, distributor, vault and executor contracts. The recorded testnet token supply is 1,000,000,000 WHITEHAT. That test implementation must not be read as a verified production launch allocation or Pons supply commitment.",
+          "The production WHITEHAT token and four core infrastructure contracts are deployed on Robinhood Chain mainnet. Production buyback routing remains pending activation. Historical testnet deployments remain documented in the repository and are separate from the production token.",
           "The economic demonstration used mock assets and a test-only router. It is not a production DEX integration or evidence of recovered bounty revenue. No additional staking yield, burn schedule or allocation is asserted by these docs."
         ],
         "links": [
           [
-            "Verified testnet directory",
+            "Production contract directory",
             "contracts"
           ],
           [
@@ -497,21 +497,21 @@ export const docPages: DocPage[] = [
       {
         "title": "Robinhood Chain Mainnet",
         "text": [
-          "Core production infrastructure is deployed on Robinhood Chain. The official $WHITEHAT token will be linked to the protocol following its Pons launch.",
+          "Core production infrastructure and the official $WHITEHAT token are deployed on Robinhood Chain. The token is live on Pons.",
           "Network: Robinhood Chain Mainnet / chain ID 4663."
         ]
       },
       {
         "title": "$WHITEHAT",
         "text": [
-          "Production CA: Pending Pons launch",
-          "The production token will be created through Pons. After launch, the official token address will be verified and linked once to the already-deployed BuybackVault. Only the authorised administrator can perform this one-time binding; the stored token address cannot subsequently be replaced."
+          "Production CA: 0xb9e9d4c42e34c7a494dd35cfa640b94882d57c45",
+          "The production token launched through Pons and is permanently bound to BuybackVault. The administrator-authorised, one-time binding has been verified onchain; the stored token address cannot be replaced."
         ]
       },
       {
         "title": "Buyback route: Pending activation",
         "text": [
-          "Core buyback infrastructure is deployed. Token binding and production routing follow the official Pons token launch. Buyback execution remains disabled until those launch steps are complete."
+          "Core buyback infrastructure is deployed. Production routing requires a separately verified, compatible router and explicit activation. No production route is enabled, and test routers are never used for production buybacks."
         ]
       }
     ]
@@ -588,7 +588,7 @@ export const docPages: DocPage[] = [
           [
             "Robinhood Chain mainnet",
             "4663",
-            "Read-only reconnaissance and deployed core WHITEHAT infrastructure; token and buyback route pending"
+            "Read-only reconnaissance, deployed WHITEHAT infrastructure and the live production token; buyback route pending activation"
           ],
           [
             "Robinhood Chain Testnet",
@@ -597,7 +597,7 @@ export const docPages: DocPage[] = [
           ]
         ],
         "text": [
-          "These IDs and explorer links come from the current repository configuration. Core infrastructure is deployed on mainnet; the production WHITEHAT token and buyback route remain pending."
+          "These IDs and explorer links come from the current repository configuration. Core infrastructure and the production WHITEHAT token are deployed on mainnet; the buyback route remains pending activation."
         ]
       },
       {
@@ -789,7 +789,7 @@ export const docPages: DocPage[] = [
           ],
           [
             "Economics",
-            "Core contracts deployed on mainnet; production token and buyback route pending. Mock flows remain TESTNET."
+            "Core contracts and production token deployed on mainnet; buyback route pending activation. Mock flows remain TESTNET."
           ]
         ],
         "text": [
@@ -872,7 +872,7 @@ export const docPages: DocPage[] = [
       {
         "title": "How do Scout rewards work?",
         "text": [
-          "The intended model splits eligible bounty amounts actually received: 50% to the originating Scout and 50% to WHITEHAT buybacks. Core distribution infrastructure is deployed on mainnet; production token binding and buyback routing remain pending. Existing mock flows are TESTNET."
+          "The intended model splits eligible bounty amounts actually received: 50% to the originating Scout and 50% to WHITEHAT buybacks. Core distribution infrastructure is deployed on mainnet; production buyback routing remains pending activation. Existing mock flows are TESTNET."
         ]
       },
       {
@@ -890,7 +890,7 @@ export const docPages: DocPage[] = [
       {
         "title": "Where is the official contract address?",
         "text": [
-          "$WHITEHAT Production CA — Pending Pons launch. Use the Contracts page for verified mainnet infrastructure and separately labelled testnet records. Do not treat a testnet address as the production Pons token."
+          "$WHITEHAT production CA: 0xb9e9d4c42e34c7a494dd35cfa640b94882d57c45. Use the Contracts page for verified mainnet infrastructure, the token explorer and official Pons link. Never use a testnet address as the production token."
         ]
       },
       {
@@ -922,7 +922,7 @@ export const docPages: DocPage[] = [
         "title": "Use verified destinations",
         "text": [
           "The official website is https://whitehat.run. Follow WHITEHAT on X at https://x.com/whitehatrh and explore the repository at https://github.com/TehWhitehat/whitehat. Explorer destinations below match the supported networks.",
-          "The official Pons launch link and production token contract address will be added once confirmed."
+          "The official WHITEHAT production CA is 0xb9e9d4c42e34c7a494dd35cfa640b94882d57c45. The Pons and token explorer links below point to that exact mainnet address."
         ]
       }
     ]
