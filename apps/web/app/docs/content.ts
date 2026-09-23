@@ -915,14 +915,14 @@ export const docPages: DocPage[] = [
   {
     "slug": "links",
     "title": "Official links",
-    "description": "The WHITEHAT website, repository and configured Robinhood Chain explorers; production Pons link pending.",
+    "description": "Official WHITEHAT website, X account, GitHub repository and Robinhood Chain explorers.",
     "group": "Reference",
     "sections": [
       {
         "title": "Use verified destinations",
         "text": [
-          "The official website is https://whitehat.run. The repository is https://github.com/TehWhitehat/whitehat. Explorer destinations below match the current network configuration.",
-          "No X/Twitter profile is configured in the repository/site reviewed for these docs, so none is invented here. The Pons launch link and production contract address are pending and will be added once supplied."
+          "The official website is https://whitehat.run. Follow WHITEHAT on X at https://x.com/whitehatrh and explore the repository at https://github.com/TehWhitehat/whitehat. Explorer destinations below match the supported networks.",
+          "The official Pons launch link and production token contract address will be added once confirmed."
         ]
       }
     ]

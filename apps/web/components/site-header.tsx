@@ -1,3 +1,4 @@
+import { SocialLinks } from "./social-links";
 import Link from "next/link";
 import { WalletControl } from "./wallet-provider";
 import { HatLogo } from "./hat-logo";
@@ -12,6 +13,7 @@ export function SiteHeader() {
         <Link href="/#how-it-works" className="nav-link">The network</Link>
         <Link href="/investigations" className="nav-link">Investigations</Link>
         <Link href="/submit" className="nav-link">Submit</Link><Link href="/token" className="nav-link">Token</Link><Link href="/buybacks" className="nav-link">Buybacks</Link><Link href="/docs" className="nav-link">DOCS</Link>
+        <SocialLinks />
         <span className="preview-tag hidden sm:inline-flex">PUBLIC BETA</span>
       </nav>
       <WalletControl />

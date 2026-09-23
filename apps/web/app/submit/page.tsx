@@ -1,3 +1,4 @@
+import { SocialLinks } from "../../components/social-links";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HatLogo } from "../../components/hat-logo";
@@ -53,7 +54,7 @@ export default function SubmitPage() {
           <p className="max-w-3xl text-sm leading-6 text-muted">Whitehat is designed for defensive research, isolated simulation, and responsible disclosure. Submission of a target does not authorize attacks against live systems.</p>
         </section>
       </main>
-      <footer className="shell flex flex-wrap items-center justify-between gap-6 border-t border-line py-8"><Link href="/" className="brand flex items-center gap-3" aria-label="Whitehat home"><HatLogo /><span>WHITEHAT</span></Link><p className="text-xs text-muted">Independent security research / Public beta.</p><p className="font-mono text-[10px] tracking-widest text-muted">PUBLIC BETA</p></footer>
+      <footer className="shell flex flex-wrap items-center justify-between gap-6 border-t border-line py-8"><Link href="/" className="brand flex items-center gap-3" aria-label="Whitehat home"><HatLogo /><span>WHITEHAT</span></Link><p className="text-xs text-muted">Independent security research / Public beta.</p><p className="font-mono text-[10px] tracking-widest text-muted">PUBLIC BETA</p><SocialLinks /></footer>
     </>
   );
 }
