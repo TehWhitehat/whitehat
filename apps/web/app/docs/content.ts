@@ -491,26 +491,27 @@ export const docPages: DocPage[] = [
   {
     "slug": "contracts",
     "title": "Contract directory",
-    "description": "Production deployment status and repository-recorded Robinhood Chain Testnet contracts, clearly separated.",
+    "description": "Production infrastructure and launch status on Robinhood Chain Mainnet.",
     "group": "Protocol",
     "sections": [
       {
-        "title": "Mainnet / production",
+        "title": "Robinhood Chain Mainnet",
         "text": [
-          "TargetRegistry, BuybackVault, BuybackExecutor and BountyDistributor are deployed on Robinhood Chain mainnet / 4663. Deployment receipts, compiled code, administrator, references and executor permission have been checked onchain. The Vault token remains UNINITIALISED and can be bound only once by the administrator. No production router is enabled. $WHITEHAT Production CA — Pending Pons launch. Buyback route — Pending activation."
+          "Core production infrastructure is deployed on Robinhood Chain. The official $WHITEHAT token will be linked to the protocol following its Pons launch.",
+          "Network: Robinhood Chain Mainnet / chain ID 4663."
         ]
       },
       {
-        "title": "TESTNET deployments",
+        "title": "$WHITEHAT",
         "text": [
-          "The directory below uses the repository's recorded deployment manifest for Robinhood Chain Testnet, chain ID 46630. The manifest records verification on 14 September 2026; these are deployment records, not a fresh audit or a guarantee about current permissions.",
-          "Explorer links and copy buttons are provided for reference. Do not send real assets to testnet demonstration contracts."
+          "Production CA: Pending Pons launch",
+          "The production token will be created through Pons. After launch, the official token address will be verified and linked once to the already-deployed BuybackVault. Only the authorised administrator can perform this one-time binding; the stored token address cannot subsequently be replaced."
         ]
       },
       {
-        "title": "Mock economic demonstration",
+        "title": "Buyback route: Pending activation",
         "text": [
-          "Separate MockUSDC and TestOnlyRouter contracts were used for a TEST ONLY economic demonstration. They are mock infrastructure, not production assets or liquidity. The recorded demonstration disabled the mock router after use."
+          "Core buyback infrastructure is deployed. Token binding and production routing follow the official Pons token launch. Buyback execution remains disabled until those launch steps are complete."
         ]
       }
     ]
