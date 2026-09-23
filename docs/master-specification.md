@@ -5,6 +5,8 @@
 **Version:** 0.2
 **Status:** Founding Product Blueprint
 
+> Product direction and proposed scope, not a statement of current implementation. See [README](../README.md) for the current beta architecture and limitations.
+
 ---
 
 # 1. The Core Idea

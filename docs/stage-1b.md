@@ -1,5 +1,8 @@
 # Stage 1B — Submit Target experience
 
+> Historical milestone record: the behavior and environment below describe that stage only. For the current public beta architecture and operating instructions, see [README](../README.md) and [operations](public-beta-deployment.md).
+
+
 ## Approved starting point
 
 Whitehat Brand/UI v0.1 was saved before new edits in commit `49c336e`:
@@ -47,4 +50,4 @@ All checks below passed on 12 September 2026:
 
 Local preview: http://127.0.0.1:3000/submit, served using the existing build-and-start workflow. The development-watcher sandbox limitation documented in Stage 1A remains unchanged.
 
-Stop here for owner review. This milestone does not register targets or establish Scout attribution.
+This milestone ended at owner review. This milestone does not register targets or establish Scout attribution.

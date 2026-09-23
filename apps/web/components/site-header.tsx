@@ -11,7 +11,7 @@ export function SiteHeader() {
       <nav aria-label="Main navigation" className="flex flex-wrap items-center gap-6 text-sm text-muted sm:gap-9">
         <Link href="/#how-it-works" className="nav-link">The network</Link>
         <Link href="/investigations" className="nav-link">Investigations</Link>
-        <Link href="/submit" className="nav-link">Submit</Link><Link href="/token" className="nav-link">Token</Link><Link href="/buybacks" className="nav-link">Buybacks</Link><Link href="/admin" className="nav-link">Admin</Link>
+        <Link href="/submit" className="nav-link">Submit</Link><Link href="/token" className="nav-link">Token</Link><Link href="/buybacks" className="nav-link">Buybacks</Link><Link href="/docs" className="nav-link">DOCS</Link>
         <span className="preview-tag hidden sm:inline-flex">PUBLIC BETA</span>
       </nav>
       <WalletControl />

@@ -1,5 +1,8 @@
 # Stage 1A verification
 
+> Historical milestone record: the behavior and environment below describe that stage only. For the current public beta architecture and operating instructions, see [README](../README.md) and [operations](public-beta-deployment.md).
+
+
 Verified on 12 September 2026.
 
 | Check | Result |

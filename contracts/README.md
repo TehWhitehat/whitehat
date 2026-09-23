@@ -10,15 +10,15 @@ From this directory, run the existing Foundry binary:
 
 `script/DeployTestnet.s.sol` refuses any chain except Robinhood Chain Testnet (46630). It deploys the five contracts and grants the executor access to the vault. All routers remain disabled. The deployment wallet initially holds administration and operator roles; administrator transfer uses a delayed two-step process.
 
-Deployment is pending a dedicated testnet wallet. Keep `WHITEHAT_TESTNET_PRIVATE_KEY` in the locally ignored `contracts/.env`; never paste or commit it. `WHITEHAT_TESTNET_TOKEN_RECIPIENT` is optional and defaults to that wallet. Do not broadcast until deployment is explicitly approved.
+The recorded deployment is complete. Any separately authorized future deployment requires a dedicated testnet wallet. Keep `WHITEHAT_TESTNET_PRIVATE_KEY` in the locally ignored `contracts/.env`; never paste or commit it. `WHITEHAT_TESTNET_TOKEN_RECIPIENT` is optional and defaults to that wallet. Do not broadcast until deployment is explicitly approved.
 
-After approval, the prepared command is:
+For reference only, the deployment command is shown below. Do not rerun it for the existing deployment; a new deployment requires explicit approval:
 
 ```powershell
 ../services/analyzer/tools/node_modules/@foundry-rs/forge-win32-amd64/bin/forge.exe script script/DeployTestnet.s.sol:DeployTestnet --rpc-url https://rpc.testnet.chain.robinhood.com --broadcast
 ```
 
-Only after deployment verification, set the token/registry public addresses and registry deployment block in the web app's local environment. Until then `/token` shows no contract address and investigations retain offchain attribution.
+The verified token/registry addresses and registry deployment block are recorded in the deployment manifest and used by the web configuration. Keep these values consistent with the verified testnet deployment. First-Scout submission attribution remains persisted offchain; the testnet registration flow is separate.
 
 Slither results are generated under `work/`; reviewed findings are documented in `SECURITY-REVIEW.md`. Generated files, dependencies and local secrets are ignored by Git.
 

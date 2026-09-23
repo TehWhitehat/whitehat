@@ -1,61 +1,88 @@
-# Whitehat
+# WHITEHAT
 
-Whitehat: approved pages, local defensive security engine, and Supabase product backbone (Supabase setup required).
+WHITEHAT is a public-beta platform for defensive DeFi security research. Scouts submit targets, operators review scope, and a separate analysis worker collects evidence for human review.
 
-Create a Supabase project named `whitehat-dev`. Run `supabase/migrations/001_backbone.sql` once in its SQL Editor. Add the project URL and server secret to `apps/web/.env.local` as `SUPABASE_URL` and `SUPABASE_SECRET_KEY`. Never use a NEXT_PUBLIC prefix for the secret. The existing analyzer path stays unchanged.
+[Public beta](https://whitehat.run) · [Product docs](https://whitehat.run/docs) · [Operations guide](docs/public-beta-deployment.md) · [Security engine](services/analyzer/README.md) · [Testnet contracts](contracts/README.md)
 
-## What is working
+## Architecture
 
-- A Next.js + TypeScript + Tailwind CSS homepage.
-- Responsive layout, keyboard-accessible navigation and local section links.
-- Whitehat positioning, the proposed bounty split, and clearly marked zero-value placeholder statistics.
-- A `/submit` page with address-format validation and authenticated persistent Scout submissions.
-- Real network, bytecode, EIP-1967 storage and explorer checks, followed by first-pass verified ABI mapping.
-
-The homepage's Submit a Target button opens `/submit`. Valid input opens `/investigations/[id]`. Real submissions require an injected wallet and an offchain sign-in message. Supabase stores targets, Scout submissions, investigations, events, findings and reports. Original Scout attribution cannot be overwritten. Public views omit private evidence. No blockchain transactions, external AI model or public deployment. Local sessions expire after eight hours or a server restart.
-
-## Open the website
-
-While the local server is running, visit **http://127.0.0.1:3000** in your browser. This address refers to your own computer.
-
-The new form is at **http://127.0.0.1:3000/submit**.
-
-## Try the target form
-
-1. Select the chain whose public RPC should be queried read-only.
-2. Enter a contract address: `0x` followed by exactly 40 hexadecimal characters (0–9, a–f, A–F). Other text fields are optional.
-3. Press **Submit Target**. Invalid addresses show an inline error. Optional website fields must contain an HTTP or HTTPS URL if filled in.
-4. Connect your wallet and sign in using the header. Submit to create a stored investigation; duplicate targets retain the original Scout.
-5. Refreshing real investigations loads stored progress. Keep the tab open during the initial local run; disconnecting can interrupt analysis, while saved evidence remains. The local fixture continues to rerun on refresh.
-
-For the tested real contract, select Robinhood Chain Testnet and use `0x5695b873025378767073d1329c8f8d68fb7E53e8`. This is a read-only verification example, not a security recommendation. Attribution is offchain, subject to eligibility review, and does not guarantee a reward.
-
-## Start it again later (Windows PowerShell)
-
-1. Open PowerShell.
-2. Move into the repository by copying this command:
-
-```powershell
-Open a terminal in the Whitehat project root folder.
+```text
+User → Vercel web app → Supabase → investigation queue
+                                      ↓
+                             WHITEHAT analysis worker
+                                      ↓
+                             Security tools / AI provider
+                                      ↓
+                             Results persisted to Supabase
+                                      ↓
+                             Public investigation UI
 ```
 
-3. Start the checked, optimized local preview:
+The Next.js frontend and server routes run on Vercel. Supabase stores wallet sessions, targets, Scout attribution, queued jobs, events, findings and reports. The WHITEHAT worker is an external process that claims jobs and saves results. It makes outbound requests and exposes no public inbound API.
+
+The current beta uses a self-hosted worker with Ollama and `qwen2.5-coder:7b`; it is not fully cloud-hosted. The worker runtime can move independently of the frontend, provided its tools, private configuration and database access are available. Ollama currently must share the worker's loopback network. A Windows launcher is available; the included Linux Docker configuration requires validation on the intended host.
+
+Processing depends on an operator keeping the worker runtime available. Closing a browser tab does not stop a queued investigation. Interrupted jobs may require an operator to requeue them.
+
+## Product flow
+
+1. Connect an EVM wallet and sign an offchain sign-in message. Sign-in requests no transaction or token approval.
+2. Submit a chain and contract address through `/submit`. Supabase saves the target and investigation; duplicate submissions preserve the original Scout.
+3. New targets queue read-only Recon. An approved operator reviews scope and explicitly queues deeper permitted analysis.
+4. The worker runs supported tools and AI-assisted review, then persists progress and results.
+5. Explore and investigation pages show public progress. Unresolved findings, reproduction details and reports are restricted to approved admins, including when the viewer is the originating Scout.
+
+The nine-stage pipeline is Recon, Cartographer, Static Analyst, Invariant Agent, Fuzz Agent, Economic Agent, Simulation Agent, Critic and Reporter. Stages report limitations when tools, source, model responses or authorized test harnesses are unavailable; a stage name does not guarantee full coverage.
+
+## Safety and beta limits
+
+- Public reconnaissance is read-only. Deeper analysis requires reviewed scope and operator approval.
+- Fuzz/invariant execution and simulation are restricted to the repository-owned fixture. Unsupported third-party execution remains limited.
+- Deterministic evidence remains authoritative. AI conclusions are candidates, not proof of exploitability. Results require human review.
+- The investigation pipeline performs no autonomous exploitation, automatic disclosure or real bounty payment.
+- The Scout model allocates 50% of an eligible successful bounty to the originating Scout and 50% to WHITEHAT buybacks, subject to review and the applicable security program. A submission does not guarantee a reward.
+- Existing token, attribution and mock economic demonstrations are **Robinhood Chain Testnet / 46630 only**. Mock activity is not real recovered bounty revenue.
+- The worker does not require a wallet private key. Supabase privileged credentials remain server-side and must never use a `NEXT_PUBLIC_` prefix.
+
+## Local Development
+
+Install Node.js 22 or newer and Git. Configure `apps/web/.env.local` with server-only Supabase settings and the appropriate origin/admin configuration. For a fresh database, apply migrations 001, 002 and 003 in order; do not replay migrations already applied. See the [operations guide](docs/public-beta-deployment.md). `.env.example` contains generic values, not credentials.
+
+From the repository root:
 
 ```powershell
+npm.cmd ci --foreground-scripts
+npm.cmd run build
 npm.cmd run start
 ```
 
-4. Open http://127.0.0.1:3000. Keep PowerShell open while you use the site. Press **Ctrl+C** in that PowerShell window to stop it.
+Open http://127.0.0.1:3000. These commands serve a development copy of the web app; the public beta remains on Vercel. On other shells, use `npm` instead of `npm.cmd`. `npm.cmd run dev` enables the development watcher where supported. If child-process restrictions prevent it, use build-and-start instead. Rebuild after edits when using `start`.
 
-If you get a port-in-use message, the site may already be running. Check the URL before starting another copy.
+Local-only development may omit `WHITEHAT_PUBLIC_ORIGIN` to allow loopback HTTP. A deployed web app must use its exact HTTPS origin.
 
-## Install on a fresh computer
+### Run the analysis worker
 
-Install Node.js 22 or newer and Git. From this folder, run `npm.cmd ci --foreground-scripts`, then `npm.cmd run build`, then `npm.cmd run start`. Configure Supabase as above for persistent submissions. The fixture works without it. `npm.cmd` avoids PowerShell script-policy problems with the `npm` shortcut.
+The worker can run on a developer machine or another operator-controlled host. The current Windows runtime uses Python 3.12, Slither, solc 0.8.26, Foundry and Ollama. See [analyzer setup](services/analyzer/README.md) and [worker configuration](docs/public-beta-deployment.md#self-hosted-worker).
 
-## Check the project
+For an already configured Windows runtime, open PowerShell in the repository root:
 
-Run these commands from this folder:
+```powershell
+.\start-whitehat-worker.ps1
+```
+
+The launcher reads the ignored `services/runner/.env`, compiles the runner and starts it. Keep the worker and Ollama running for the test session. Stop with **Ctrl+C**, preferably after the active job finishes. Check the queue before starting: existing queued jobs can be claimed immediately. Do not overwrite a working environment file.
+
+Current self-hosted AI settings:
+
+```dotenv
+WHITEHAT_AI_PROVIDER=ollama
+WHITEHAT_AI_BASE_URL=http://localhost:11434
+WHITEHAT_AI_MODEL=qwen2.5-coder:7b
+```
+
+No AI API key is required. `localhost` describes the private connection between worker and Ollama, not the public website. Do not expose Ollama to the internet. Model failures are reported as limitations while deterministic evidence is retained.
+
+## Validation
 
 ```powershell
 npm.cmd run lint
@@ -63,53 +90,23 @@ npm.cmd run typecheck
 npm.cmd run build
 ```
 
-- **lint** checks common code mistakes and accessibility rules.
-- **typecheck** checks that TypeScript values fit together correctly.
-- **build** checks that Next.js can create an optimized version of the site.
-- **start** runs that optimized build locally, after `build` succeeds.
+These check code quality, TypeScript and the production web build. `npm.cmd run test:database --workspace=@whitehat/web` checks database rules in an in-memory test engine, not hosted connectivity. Analyzer tests are documented [separately](services/analyzer/README.md).
 
-After editing the source, stop the preview with Ctrl+C, run `npm.cmd run build`, then `npm.cmd run start` again to see your changes. The optional `npm.cmd run dev` command normally updates the page automatically as you edit, but the Codex environment's child-process restrictions blocked that mode during verification. The build-and-start workflow above is the tested path in this environment.
+## Repository guide
 
-## Folder guide
+| Path | Purpose |
+| --- | --- |
+| `apps/web/` | Public UI, wallet authentication, server routes and private admin review |
+| `services/runner/` | Queue consumer, job leases and heartbeat |
+| `services/analyzer/` | Security tools, AI provider, bounded reports and controlled fixtures |
+| `start-whitehat-worker.ps1` | Windows worker launcher |
+| `supabase/migrations/` | Database schema, access restrictions and job functions |
+| `contracts/` | Testnet contracts, tests and deployment script |
+| `docs/deployments/` | Public testnet addresses and demonstration receipts |
+| `packages/shared/` | Reserved shared-package directory |
+| `docs/` | Operations, product blueprint and historical milestone records |
+| `.env.example` | Generic web/development environment examples |
+| `AGENTS.md` | Engineering scope and safety boundaries |
 
-```text
-whitehat/
-├── apps/web/          The homepage and Submit Target page
-├── services/analyzer/ Local defensive security worker
-├── contracts/         Future contracts (placeholder only)
-├── packages/shared/   Future shared code (placeholder only)
-├── docs/              Specification and milestone notes
-├── .env.example       Explains that no credentials are needed
-├── AGENTS.md          Scope and engineering instructions
-├── package.json       Commands for the whole repository
-└── package-lock.json  Exact installed dependency versions
-```
-
-## Editing the homepage
-
-- `apps/web/app/page.tsx`: homepage words, sections and technical SVG illustration.
-- `apps/web/app/globals.css`: colors, spacing, typography and mobile styling.
-- `apps/web/app/layout.tsx`: page title, description and shared document structure.
-- `apps/web/app/icon.svg`: the small Whitehat icon in the browser tab.
-- `apps/web/components/hat-logo.tsx`: the approved shared hat logo.
-- `apps/web/components/site-header.tsx`: the shared navigation at the top of both pages.
-- `apps/web/app/submit/page.tsx`: the new intake page, reward panel, pipeline, and security notice.
-- `apps/web/app/submit/submit.css`: form styling, scoped to the new page.
-- `apps/web/components/target-form.tsx`: form validation, temporary session record and console navigation.
-- `apps/web/lib/investigation.ts`: shared event types and temporary session data.
-- `apps/web/lib/recon.ts`: bounded read-only RPC / explorer requests and ABI mapping.
-- `apps/web/app/api/investigations/route.ts`: streams actual operation events to the browser.
-- `apps/web/components/investigation-console.tsx`: agent pipeline, activity, telemetry and truthful placeholders.
-
-The monorepo uses npm workspaces, with only the web app registered as a package for now. There is no extra monorepo framework. Fonts are local system fonts, so the page does not need a font service.
-
-This is a local Git repository; nothing has been uploaded. Checkpoints: approved brand `49c336e`; approved target intake `c527341`. These used a command-local Codex author identity without changing your Git settings. Stop after Stage 1C for owner approval.
-
-Setup references: [Next.js installation](https://nextjs.org/docs/app/getting-started/installation) and [Tailwind with Next.js](https://tailwindcss.com/docs/installation/framework-guides/nextjs).
-
-Database checks: `npm.cmd run test:database --workspace=@whitehat/web` exercises the migration and privacy/attribution rules using an in-memory PostgreSQL test engine. It is not an application storage fallback or a hosted Supabase connectivity check.
-
-## Public beta preparation
-
-New setup: docs/public-beta-deployment.md. Apply Supabase migrations 002 and 003, configure the public HTTPS origin and explicit admin wallet allowlist, and start the persistent worker on a private Linux Docker host. The web app no longer runs submitted investigations inside a browser connection. Do not publish until the deployment checklist passes. No mainnet contracts or automated disclosure are enabled.
+The web app is the registered npm workspace; the analyzer and runner have separate runtime responsibilities. The [master specification](docs/master-specification.md) describes product direction, not a promise that every proposed capability is implemented. Stage 1A–1C notes and the original verification record are historical snapshots, not current operating instructions.
 
