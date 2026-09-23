@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
-export const setupMessage = "Database setup required. Add SUPABASE_URL and SUPABASE_SECRET_KEY to apps/web/.env.local and apply supabase/migrations/001_backbone.sql.";
+export const setupMessage = "Service temporarily unavailable. Please try again later.";
 export function database() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SECRET_KEY;
@@ -9,5 +9,5 @@ export function database() {
   return createClient(url, key, { global: { fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.any([...(init?.signal ? [init.signal] : []), AbortSignal.timeout(5000)]) }) }, auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
 }
 export function databaseConfigured() { return !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SECRET_KEY; }
-export function databaseError() { return databaseConfigured() ? "Database operation failed. Check Supabase and apply the schema migration." : setupMessage; }
+export function databaseError() { return setupMessage; }
 
