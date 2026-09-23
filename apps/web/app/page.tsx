@@ -70,7 +70,7 @@ export default async function Home() {
           <div className="reward"><p className="text-6xl font-medium tracking-tighter">50<span className="text-3xl text-mint">%</span></p><p className="mt-3 font-mono text-xs tracking-wider">TO THE SCOUT</p><p className="mt-2 text-sm text-muted">For surfacing the opportunity.</p></div>
           <div className="reward"><p className="text-6xl font-medium tracking-tighter">50<span className="text-3xl text-mint">%</span></p><p className="mt-3 font-mono text-xs tracking-wider">$WHITEHAT BUYBACK</p><p className="mt-2 text-sm text-muted">Allocated to the planned token buyback.</p></div>
         </div>
-        <p className="mt-4 text-xs leading-5 text-muted">Bounties depend on accepted findings and payment. Protocol research requires scope review. Core infrastructure is deployed on Robinhood Chain mainnet. The production token is live on Pons. Buyback routing remains pending activation; testnet demonstrations are labelled separately.</p>
+        <p className="mt-4 text-xs leading-5 text-muted">Bounties depend on accepted findings and payment. Protocol research requires scope review. Core infrastructure is deployed on Robinhood Chain mainnet. The production token is live on Pons. Buyback routing remains pending activation.</p>
       </section>
 
       <section id="investigations" className="shell pb-20" aria-labelledby="investigations-title">

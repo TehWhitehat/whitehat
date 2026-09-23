@@ -435,7 +435,7 @@ export const docPages: DocPage[] = [
           ]
         ],
         "text": [
-          "This is the protocol's intended production model. Existing distribution and buyback transactions are testnet mock demonstrations. There is no promise of a production payment, token price increase or return. Operations must not silently change the 50/50 allocation."
+          "This is the protocol's intended production model. Production buyback routing remains pending activation. There is no promise of a production payment, token price increase or return. Operations must not silently change the 50/50 allocation."
         ],
         "links": [
           [
@@ -472,8 +472,8 @@ export const docPages: DocPage[] = [
       {
         "title": "What is implemented today",
         "text": [
-          "The production WHITEHAT token and four core infrastructure contracts are deployed on Robinhood Chain mainnet. Production buyback routing remains pending activation. Historical testnet deployments remain documented in the repository and are separate from the production token.",
-          "The economic demonstration used mock assets and a test-only router. It is not a production DEX integration or evidence of recovered bounty revenue. No additional staking yield, burn schedule or allocation is asserted by these docs."
+          "The production WHITEHAT token and four core infrastructure contracts are deployed on Robinhood Chain mainnet. Production buyback routing remains pending activation. The official token is permanently bound to BuybackVault.",
+          "Token trading on Pons is separate from protocol buybacks. A verified compatible production route must be activated before buybacks can execute. No additional staking yield, burn schedule or allocation is asserted by these docs."
         ],
         "links": [
           [
@@ -604,7 +604,7 @@ export const docPages: DocPage[] = [
         "title": "Reads versus transactions",
         "text": [
           "Wallet sign-in uses an offchain message. Target submission writes to the application database. Recon reads chain data; it does not sign or send target transactions.",
-          "The optional registry interaction requests an explicit wallet transaction on chain 46630. It may require testnet gas. The token and mock buyback demonstration are testnet-only. Nothing in the investigation pipeline authorises a live exploit or a mainnet transfer."
+          "The optional registry interaction requests an explicit wallet transaction on chain 46630. It may require testnet gas. Nothing in the investigation pipeline authorises a live exploit or a mainnet transfer."
         ],
         "links": [
           [
@@ -789,7 +789,7 @@ export const docPages: DocPage[] = [
           ],
           [
             "Economics",
-            "Core contracts and production token deployed on mainnet; buyback route pending activation. Mock flows remain TESTNET."
+            "Core contracts and production token deployed on mainnet; buyback route pending activation."
           ]
         ],
         "text": [
@@ -872,7 +872,7 @@ export const docPages: DocPage[] = [
       {
         "title": "How do Scout rewards work?",
         "text": [
-          "The intended model splits eligible bounty amounts actually received: 50% to the originating Scout and 50% to WHITEHAT buybacks. Core distribution infrastructure is deployed on mainnet; production buyback routing remains pending activation. Existing mock flows are TESTNET."
+          "The intended model splits eligible bounty amounts actually received: 50% to the originating Scout and 50% to WHITEHAT buybacks. Core distribution infrastructure is deployed on mainnet; production buyback routing remains pending activation."
         ]
       },
       {
